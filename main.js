@@ -1,6 +1,5 @@
 let lastRequestTime = 0; // Track the last API request time
 const voteBufferTime = 10000; // 10 seconds in milliseconds
-const fetchedCards = []; // Cache fetched cards
 let currentPage = 1; // Track the current page of cards
 
 async function loadCards() {
@@ -15,9 +14,9 @@ async function loadCards() {
     // Hide the "Next 3 Cards" button while loading
     document.getElementById("nextCardButton").style.display = "none";
 
-    // Fetch 3 cards sorted by EDHREC rank in ascending order
+    // Fetch top 10 cards sorted by EDHREC rank
     const response = await fetch(
-      `https://api.scryfall.com/cards/search?order=edhrec&q=is%3Acommander&dir=asc&unique=cards&page=${currentPage}&per_page=3`
+      `https://api.scryfall.com/cards/search?q=is%3Acommander+game%3Apaper&order=edhrec&unique=cards&dir=asc&page=${currentPage}&per_page=10`
     );
     const data = await response.json();
 
@@ -28,12 +27,10 @@ async function loadCards() {
 
     const cards = data.data;
 
-    // Add fetched cards to the cache
-    fetchedCards.push(...cards);
-
     // Display the cards
     const cardContainer = document.getElementById("cardContainer");
-    cards.forEach((cardData, index) => {
+    cardContainer.innerHTML = ""; // Clear previous cards
+    cards.forEach((cardData) => {
       const imageUrl = cardData.image_uris?.normal || cardData.card_faces?.[0]?.image_uris?.normal || '';
       cardContainer.innerHTML += `
         <div class="card-details">
@@ -55,10 +52,7 @@ async function loadCards() {
       `;
     });
 
-    // Increment the page for the next request
-    currentPage++;
-
-    // Show the "Next 3 Cards" button
+    // Show the "Next 10 Cards" button
     document.getElementById("nextCardButton").style.display = "block";
   } catch (error) {
     document.getElementById("cardContainer").innerHTML = `<p>Failed to load cards. Please try again.</p>`;
