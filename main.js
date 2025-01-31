@@ -86,7 +86,7 @@ async function vote(cardName, powerLevel, event) {
 
     // Send vote to Google Apps Script
     const response = await fetch(
-      "https://script.google.com/macros/s/AKfycby9GxLAK01t0eMQaA6MdCXRKmtFf2zX5gn-Ayx3mvavNft5C_5VzQfar4kT1eW58TOo/exec",
+      "https://script.google.com/macros/s/AKfycbyUoiEciCBpuDNRyKK_wdJhH_ugAHbtli1CkZ6DvCw/dev",
       {
         method: "POST",
         headers: {
@@ -96,6 +96,7 @@ async function vote(cardName, powerLevel, event) {
       }
     );
 
+    console.log("Response status:", response.status); // Debugging
     if (!response.ok) {
       throw new Error("Failed to record vote");
     }
