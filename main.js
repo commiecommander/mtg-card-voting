@@ -75,6 +75,7 @@ async function vote(cardName, powerLevel, event) {
     const buttons = cardElement.querySelectorAll(".vote-buttons button");
     buttons.forEach((button) => {
       button.disabled = true;
+      button.style.backgroundColor = "#cccccc"; // Grey out the button
     });
 
     // Show a confirmation message
