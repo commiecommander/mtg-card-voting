@@ -4,17 +4,24 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MTG Card Voting Tool</title>
-  <link rel="stylesheet" href="style.css"> <!-- Ensure this file exists in your repo -->
-  <script src="main.js"></script> <!-- Ensure this file exists in your repo -->
+  <link rel="stylesheet" href="style.css"> <!-- Link to your CSS file -->
 </head>
 <body>
-  <h1>MTG Card Voting Tool</h1>
-  <div id="cardContainer" class="card-grid">
-    <!-- Card details will be loaded here by main.js -->
-  </div>
-  <button id="nextCardButton" onclick="loadCards()">Next 3 Cards</button>
-  <div id="results">
+  <header>
+    <h1>MTG Card Voting Tool</h1>
+  </header>
+
+  <main>
+    <div id="cardContainer" class="card-grid">
+      <!-- Cards will be loaded here by main.js -->
+    </div>
+    <button id="nextCardButton" onclick="loadCards()">Next 10 Cards</button>
+  </main>
+
+  <footer id="results">
     <!-- Voting results will be displayed here -->
-  </div>
+  </footer>
+
+  <script src="main.js"></script> <!-- Link to your JavaScript file -->
 </body>
 </html>
