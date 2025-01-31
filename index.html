@@ -11,15 +11,23 @@
     <h1>MTG Card Voting Tool</h1>
   </header>
 
+  <noscript>
+    <p style="color: red; text-align: center;">JavaScript is required for this tool to function properly. Please enable JavaScript in your browser.</p>
+  </noscript>
+
   <main>
-    <div id="cardContainer" class="card-grid">
-      <!-- Cards will be loaded here by main.js -->
-    </div>
-    <button id="nextCardButton" onclick="loadCards()">Next 10 Cards</button>
+    <section>
+      <div id="cardContainer" class="card-grid">
+        <!-- Cards will be loaded here by main.js -->
+      </div>
+      <button id="nextCardButton" onclick="loadCards()" disabled>Next 10 Cards</button>
+    </section>
   </main>
 
-  <footer id="results">
-    <!-- Voting results will be displayed here -->
+  <footer>
+    <div id="results" aria-live="polite">
+      <!-- Voting results will be displayed here -->
+    </div>
   </footer>
 
   <script src="main.js"></script> <!-- Link to your JavaScript file -->
