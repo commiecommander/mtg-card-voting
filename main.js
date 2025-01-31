@@ -77,7 +77,7 @@ async function vote(cardName, powerLevel, event) {
 
     // Send vote to Google Apps Script
     const response = await fetch(
-      "YOUR_GOOGLE_APPS_SCRIPT_URL", // Replace with your web app URL
+      "https://script.google.com/macros/s/AKfycby9GxLAK01t0eMQaA6MdCXRKmtFf2zX5gn-Ayx3mvavNft5C_5VzQfar4kT1eW58TOo/exec",
       {
         method: "POST",
         headers: {
