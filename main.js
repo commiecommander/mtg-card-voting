@@ -2,6 +2,7 @@ let lastRequestTime = 0; // Track the last API request time
 const voteBufferTime = 10000; // 10 seconds in milliseconds
 let currentPage = 1; // Track the current page of cards
 const maxPages = 10; // Maximum number of pages to load
+const cardsPerPage = 3; // Number of cards to load per page
 
 async function loadCards() {
   const now = Date.now();
@@ -17,12 +18,12 @@ async function loadCards() {
   }
 
   try {
-    // Hide the "Next 10 Cards" button while loading
+    // Hide the "Next 3 Cards" button while loading
     document.getElementById("nextCardButton").style.display = "none";
 
-    // Fetch top 10 commanders sorted by EDHREC rank
+    // Fetch commanders sorted by EDHREC rank (limited to 3 cards per page)
     const response = await fetch(
-      `https://api.scryfall.com/cards/search?q=is%3Acommander+game%3Apaper&order=edhrec&unique=cards&page=${currentPage}`
+      `https://api.scryfall.com/cards/search?q=is%3Acommander+game%3Apaper&order=edhrec&unique=cards&page=${currentPage}&page_size=${cardsPerPage}`
     );
 
     if (!response.ok) throw new Error(`API request failed with status ${response.status}`);
@@ -58,7 +59,7 @@ async function loadCards() {
       `;
     });
 
-    // Show the "Next 10 Cards" button
+    // Show the "Next 3 Cards" button
     document.getElementById("nextCardButton").style.display = "block";
     currentPage++; // Move to next page for future calls
   } catch (error) {
