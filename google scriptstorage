@@ -1,0 +1,54 @@
+function doPost(e) {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Power Level Results');
+  const data = JSON.parse(e.postData.contents);
+  const { cardName, powerLevel, recaptchaResponse } = data;
+
+  try {
+    // Verify reCAPTCHA
+    const secretKey = "6Lf07ckqAAAAAACnjlaq6xGW5yqrDEiZ-IgnZlRE"; // Your reCAPTCHA secret key
+    const verificationUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${recaptchaResponse}`;
+    const verificationResponse = UrlFetchApp.fetch(verificationUrl);
+    const verificationResult = JSON.parse(verificationResponse.getContentText());
+
+    // Check if reCAPTCHA verification was successful
+    if (!verificationResult.success) {
+      return ContentService.createTextOutput(
+        JSON.stringify({ success: false, message: "reCAPTCHA verification failed." })
+      ).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // Find the row for the card
+    const rows = sheet.getDataRange().getValues();
+    let cardRowIndex = -1;
+
+    for (let i = 0; i < rows.length; i++) {
+      if (rows[i][0] === cardName) {
+        cardRowIndex = i + 1; // Rows are 1-indexed in Google Sheets
+        break;
+      }
+    }
+
+    if (cardRowIndex === -1) {
+      // If the card doesn't exist, add a new row
+      sheet.appendRow([cardName, 0, 0, 0, 0]); // Initialize vote counts to 0
+      cardRowIndex = sheet.getLastRow(); // Get the row index of the newly added row
+    }
+
+    // Update the vote count for the selected power level
+    if (powerLevel >= 1 && powerLevel <= 4) {
+      const voteColumn = powerLevel + 1; // Columns are 1-indexed (Power Level 1 = Column 2, etc.)
+      const currentVotes = sheet.getRange(cardRowIndex, voteColumn).getValue();
+      sheet.getRange(cardRowIndex, voteColumn).setValue(currentVotes + 1);
+    }
+
+    // Return a success response
+    return ContentService.createTextOutput(
+      JSON.stringify({ success: true, message: "Vote saved successfully." })
+    ).setMimeType(ContentService.MimeType.JSON);
+  } catch (error) {
+    // Return an error response
+    return ContentService.createTextOutput(
+      JSON.stringify({ success: false, error: error.message })
+    ).setMimeType(ContentService.MimeType.JSON);
+  }
+}
