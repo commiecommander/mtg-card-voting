@@ -1,7 +1,17 @@
 function doPost(e) {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Power Level Results');
   const data = JSON.parse(e.postData.contents);
-  const { cardName, powerLevel } = data;
+  const { cardName, powerLevel, token } = data;
+
+  // Verify reCAPTCHA token
+  const url = `https://www.google.com/recaptcha/api/siteverify?secret=6Lf07ckqAAAAAACnjlaq6xGW5yqrDEiZ-IgnZlRE&response=${token}`;
+  const response = UrlFetchApp.fetch(url, { method: 'POST' });
+  const result = JSON.parse(response.getContentText());
+
+  if (!result.success) {
+    return ContentService.createTextOutput(JSON.stringify({ success: false, error: "CAPTCHA verification failed" }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
 
   try {
     // Find the row for the card
