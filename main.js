@@ -1,68 +1,75 @@
-let lastRequestTime = 0; // Track the last API request time
-const voteBufferTime = 10000; // 10 seconds in milliseconds
-let currentPage = 1; // Track the current page of cards
-const maxPages = 10; // Maximum number of pages to load
+let lastVoteTime = 0; // Track the time of the last vote
+const voteCooldown = 3000; // 3 seconds cooldown between votes
 
-// reCAPTCHA callback function
-function onCaptchaSuccess(token) {
-  console.log("reCAPTCHA token received:", token);
-  // Proceed with the vote submission
-  submitVote(token);
-}
+async function vote(cardName, powerLevel, event) {
+  const now = Date.now();
+  if (now - lastVoteTime < voteCooldown) {
+    alert("Please wait a few seconds before voting again.");
+    return;
+  }
+  lastVoteTime = now;
 
-async function submitVote(token) {
-  const cardName = window.currentCardName; // Store card name globally
-  const powerLevel = window.currentPowerLevel; // Store power level globally
+  const cardElement = event.target.closest(".card-details");
+  const buttons = cardElement.querySelectorAll(".vote-buttons button");
+
+  // Check if the user has already voted on this card
+  const votedCards = JSON.parse(localStorage.getItem("votedCards") || "[]");
+  if (votedCards.includes(cardName)) {
+    alert("You have already voted on this card.");
+    return;
+  }
+
+  // Get the reCAPTCHA response
+  const recaptchaResponse = grecaptcha.getResponse();
+  if (!recaptchaResponse) {
+    alert("Please complete the reCAPTCHA.");
+    return;
+  }
 
   try {
-    // Send vote to Google Apps Script with CAPTCHA token
+    // Disable buttons and show loading state
+    buttons.forEach((button) => {
+      button.disabled = true;
+      button.style.backgroundColor = "#cccccc";
+    });
+
+    // Send vote and reCAPTCHA response to Google Apps Script
     const response = await fetch(
-      "https://script.google.com/macros/s/AKfycby9GxLAK01t0eMQa6MdCXRKmtFf2zX5gn-Ayx3mvavNft5C_5VzQfar4kT1eW58TOo/exec",
+      "https://script.google.com/macros/s/AKfycby9GxLAK01t0eMQaA6MdCXRKmtFf2zX5gn-Ayx3mvavNft5C_5VzQfar4kT1eW58TOo/exec",
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ cardName, powerLevel, token }),
-        mode: 'no-cors',
+        body: JSON.stringify({ cardName, powerLevel, recaptchaResponse }),
+        mode: "no-cors",
       }
     );
 
+    // Add the card to the list of voted cards
+    votedCards.push(cardName);
+    localStorage.setItem("votedCards", JSON.stringify(votedCards));
+
     // Show confirmation message
-    const cardElement = document.querySelector(`.card-details:has(button[onclick*="${cardName}"])`);
     const confirmation = document.createElement("p");
     confirmation.textContent = `Voted: Power Level ${powerLevel}`;
     confirmation.style.color = "green";
     cardElement.appendChild(confirmation);
+
+    // Reset reCAPTCHA
+    grecaptcha.reset();
   } catch (error) {
     console.error("Error saving vote:", error);
 
-    // Show error message
-    const cardElement = document.querySelector(`.card-details:has(button[onclick*="${cardName}"])`);
+    // Re-enable buttons and show error message
+    buttons.forEach((button) => {
+      button.disabled = false;
+      button.style.backgroundColor = "";
+    });
+
     const errorMessage = document.createElement("p");
     errorMessage.textContent = `Failed to save vote: ${error.message}`;
     errorMessage.style.color = "red";
     cardElement.appendChild(errorMessage);
   }
 }
-
-async function vote(cardName, powerLevel, event) {
-  const cardElement = event.target.closest(".card-details");
-  const buttons = cardElement.querySelectorAll(".vote-buttons button");
-
-  // Disable buttons and show loading state
-  buttons.forEach((button) => {
-    button.disabled = true;
-    button.style.backgroundColor = "#cccccc";
-  });
-
-  // Store card name and power level globally for use in CAPTCHA callback
-  window.currentCardName = cardName;
-  window.currentPowerLevel = powerLevel;
-
-  // Execute reCAPTCHA
-  grecaptcha.execute();
-}
-
-// Load the first set of cards when the page loads
-window.onload = loadCards;
