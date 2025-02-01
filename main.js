@@ -86,7 +86,7 @@ async function vote(cardName, powerLevel, event) {
 
     // Send vote to Google Apps Script
     const response = await fetch(
-      "https://script.google.com/macros/s/AKfycbyUoiEciCBpuDNRyKK_wdJhH_ugAHbtli1CkZ6DvCw/dev",
+      "https://script.google.com/macros/s/AKfycby9GxLAK01t0eMQaA6MdCXRKmtFf2zX5gn-Ayx3mvavNft5C_5VzQfar4kT1eW58TOo/exec",
       {
         method: "POST",
         headers: {
@@ -98,7 +98,7 @@ async function vote(cardName, powerLevel, event) {
 
     console.log("Response status:", response.status); // Debugging
     if (!response.ok) {
-      throw new Error("Failed to record vote");
+      throw new Error(`Failed to record vote. Status: ${response.status}`);
     }
 
     console.log(`Voted for ${cardName}: Power Level ${powerLevel}`);
@@ -115,7 +115,7 @@ async function vote(cardName, powerLevel, event) {
 
     // Show an error message
     const errorMessage = document.createElement("p");
-    errorMessage.textContent = "Failed to save vote. Please try again.";
+    errorMessage.textContent = `Failed to save vote: ${error.message}`;
     errorMessage.style.color = "red";
     cardElement.appendChild(errorMessage);
   }
