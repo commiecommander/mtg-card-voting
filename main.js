@@ -1,6 +1,3 @@
-let lastVoteTime = 0; // Track the time of the last vote
-const voteCooldown = 3000; // 3 seconds cooldown between votes
-
 async function vote(cardName, powerLevel, event) {
   const now = Date.now();
   if (now - lastVoteTime < voteCooldown) {
