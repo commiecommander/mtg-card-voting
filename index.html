@@ -7,6 +7,8 @@
   <title>MTG Card Voting Tool for Commander</title>
   <link rel="stylesheet" href="styles.css"> <!-- Link to your CSS file -->
   <link rel="icon" href="favicon.ico" type="image/x-icon"> <!-- Favicon -->
+  <!-- Add reCAPTCHA script -->
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
   <header>
@@ -51,6 +53,8 @@
         <div id="loadingSpinner" style="display: none;">Loading...</div>
         <!-- Cards will be loaded here by main.js -->
       </div>
+      <!-- Add reCAPTCHA widget -->
+      <div class="g-recaptcha" data-sitekey="6Lf07ckqAAAAAJuHfuEOgecdZ7BYIe-qa_kZhzII" data-callback="onCaptchaSuccess" data-size="invisible"></div>
       <button id="nextCardButton" onclick="loadCards()" aria-label="Load next 10 cards">Next 10 Cards</button>
     </section>
   </main>
