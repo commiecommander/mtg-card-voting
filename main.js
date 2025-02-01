@@ -1,6 +1,7 @@
 let lastRequestTime = 0; // Track the last API request time
 const voteBufferTime = 10000; // 10 seconds in milliseconds
 let currentPage = 1; // Track the current page of cards
+const maxPages = 10; // Maximum number of pages to load
 
 async function loadCards() {
   const now = Date.now();
@@ -9,6 +10,11 @@ async function loadCards() {
     return;
   }
   lastRequestTime = now;
+
+  if (currentPage > maxPages) {
+    alert("No more cards to load.");
+    return;
+  }
 
   try {
     // Hide the "Next 10 Cards" button while loading
@@ -19,16 +25,10 @@ async function loadCards() {
       `https://api.scryfall.com/cards/search?q=is%3Acommander+game%3Apaper&order=edhrec&unique=cards&page=${currentPage}`
     );
 
-    console.log("API Response Status:", response.status);
     if (!response.ok) throw new Error(`API request failed with status ${response.status}`);
 
     const data = await response.json();
-    console.log("Fetched Data:", data);
-
-    if (!data.data || data.data.length === 0) {
-      console.error("No cards found. Response structure:", data);
-      throw new Error("No cards found.");
-    }
+    if (!data.data || data.data.length === 0) throw new Error("No cards found.");
 
     const cards = data.data;
 
@@ -68,21 +68,15 @@ async function loadCards() {
 }
 
 async function vote(cardName, powerLevel, event) {
-  console.log("Vote function called for:", cardName, "Power Level:", powerLevel); // Debugging
+  const cardElement = event.target.closest(".card-details");
+  const buttons = cardElement.querySelectorAll(".vote-buttons button");
+
   try {
-    // Disable vote buttons for this card only
-    const cardElement = event.target.closest(".card-details");
-    const buttons = cardElement.querySelectorAll(".vote-buttons button");
+    // Disable buttons and show loading state
     buttons.forEach((button) => {
       button.disabled = true;
-      button.style.backgroundColor = "#cccccc"; // Grey out the button
+      button.style.backgroundColor = "#cccccc";
     });
-
-    // Show a confirmation message
-    const confirmation = document.createElement("p");
-    confirmation.textContent = `Voted: Power Level ${powerLevel}`;
-    confirmation.style.color = "green";
-    cardElement.appendChild(confirmation);
 
     // Send vote to Google Apps Script
     const response = await fetch(
@@ -93,24 +87,24 @@ async function vote(cardName, powerLevel, event) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ cardName, powerLevel }),
-        mode: 'no-cors', // Add this line to bypass CORS
+        mode: 'no-cors',
       }
     );
 
-    // Since 'no-cors' mode doesn't allow reading the response, we assume success
-    console.log(`Voted for ${cardName}: Power Level ${powerLevel}`);
+    // Show confirmation message
+    const confirmation = document.createElement("p");
+    confirmation.textContent = `Voted: Power Level ${powerLevel}`;
+    confirmation.style.color = "green";
+    cardElement.appendChild(confirmation);
   } catch (error) {
     console.error("Error saving vote:", error);
 
-    // Re-enable buttons if the vote fails
-    const cardElement = event.target.closest(".card-details");
-    const buttons = cardElement.querySelectorAll(".vote-buttons button");
+    // Re-enable buttons and show error message
     buttons.forEach((button) => {
       button.disabled = false;
-      button.style.backgroundColor = ""; // Reset button color
+      button.style.backgroundColor = "";
     });
 
-    // Show an error message
     const errorMessage = document.createElement("p");
     errorMessage.textContent = `Failed to save vote: ${error.message}`;
     errorMessage.style.color = "red";
