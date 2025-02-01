@@ -76,10 +76,10 @@ async function vote(cardName, powerLevel, event) {
   const cardElement = event.target.closest(".card-details");
   const buttons = cardElement.querySelectorAll(".vote-buttons button");
 
-  // Check if reCAPTCHA is completed
-  const recaptchaResponse = grecaptcha.getResponse();
-  if (!recaptchaResponse) {
-    alert("Please complete the CAPTCHA before voting.");
+  // Check if hCaptcha is completed
+  const hCaptchaResponse = document.querySelector('.h-captcha-response').value;
+  if (!hCaptchaResponse) {
+    alert("Please complete the hCaptcha before voting.");
     return;
   }
 
@@ -90,7 +90,7 @@ async function vote(cardName, powerLevel, event) {
   });
 
   try {
-    // Send vote to Google Apps Script with CAPTCHA token
+    // Send vote to Google Apps Script with hCaptcha token
     const response = await fetch(
       "https://script.google.com/macros/s/AKfycby9GxLAK01t0eMQa6MdCXRKmtFf2zX5gn-Ayx3mvavNft5C_5VzQfar4kT1eW58TOo/exec",
       {
@@ -98,7 +98,7 @@ async function vote(cardName, powerLevel, event) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ cardName, powerLevel, token: recaptchaResponse }),
+        body: JSON.stringify({ cardName, powerLevel, token: hCaptchaResponse }),
         mode: 'no-cors',
       }
     );
