@@ -23,6 +23,35 @@ main {
   padding: 20px;
 }
 
+/* Power Brackets Section */
+.bracket-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4 columns */
+  gap: 20px; /* Space between brackets */
+  margin-bottom: 40px;
+}
+
+.bracket {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.bracket h3 {
+  margin-top: 0;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.bracket p {
+  font-size: 1rem;
+  color: #666;
+  line-height: 1.5;
+}
+
 /* Card Grid */
 .card-grid {
   display: grid;
