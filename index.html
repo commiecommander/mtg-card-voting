@@ -46,10 +46,25 @@
     <section>
       <h2>Vote on Commander Cards</h2>
       <div id="cardContainer" class="card-grid">
-        <div id="loadingSpinner" style="display: none;">Loading...</div>
-        <!-- Cards will be loaded here by main.js -->
+        <!-- Example card (you can add more cards manually or dynamically) -->
+        <div class="card-details">
+          <img src="path/to/card-image.jpg" alt="Card Image of Example Card" />
+          <p><strong>Card Name:</strong> Example Card</p>
+          <p><strong>Mana Cost:</strong> {2}{U}</p>
+          <p><strong>Card Type:</strong> Creature — Human Wizard</p>
+          <p><strong>Text:</strong> Example card text goes here.</p>
+          <p><strong>Power/Toughness:</strong> 2/2</p>
+          <p><strong>EDHREC Rank:</strong> N/A</p>
+          <div class="vote-buttons">
+            <button onclick="vote('Example Card', 1, event)">Power Level 1</button>
+            <button onclick="vote('Example Card', 2, event)">Power Level 2</button>
+            <button onclick="vote('Example Card', 3, event)">Power Level 3</button>
+            <button onclick="vote('Example Card', 4, event)">Power Level 4</button>
+            <button onclick="vote('Example Card', 0, event)">Not Ready to Vote</button>
+          </div>
+        </div>
       </div>
-      <button id="nextCardButton" onclick="loadCards()" aria-label="Load next 3 cards">Next 3 Cards</button>
+      <!-- Removed the "Next 3 Cards" button since we're not dynamically loading cards -->
     </section>
   </main>
 
@@ -59,6 +74,52 @@
     </div>
   </footer>
 
-  <script src="main.js"></script> <!-- Link to your JavaScript file -->
+  <script>
+    // Voting function (same as before)
+    async function vote(cardName, powerLevel, event) {
+      const cardElement = event.target.closest(".card-details");
+      const buttons = cardElement.querySelectorAll(".vote-buttons button");
+
+      try {
+        // Disable buttons and show loading state
+        buttons.forEach((button) => {
+          button.disabled = true;
+          button.style.backgroundColor = "#cccccc";
+        });
+
+        // Send vote to Google Apps Script
+        const response = await fetch(
+          "https://script.google.com/macros/s/AKfycby9GxLAK01t0eMQaA6MdCXRKmtFf2zX5gn-Ayx3mvavNft5C_5VzQfar4kT1eW58TOo/exec",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ cardName, powerLevel }),
+            mode: 'no-cors',
+          }
+        );
+
+        // Show confirmation message
+        const confirmation = document.createElement("p");
+        confirmation.textContent = `Voted: Power Level ${powerLevel}`;
+        confirmation.style.color = "green";
+        cardElement.appendChild(confirmation);
+      } catch (error) {
+        console.error("Error saving vote:", error);
+
+        // Re-enable buttons and show error message
+        buttons.forEach((button) => {
+          button.disabled = false;
+          button.style.backgroundColor = "";
+        });
+
+        const errorMessage = document.createElement("p");
+        errorMessage.textContent = `Failed to save vote: ${error.message}`;
+        errorMessage.style.color = "red";
+        cardElement.appendChild(errorMessage);
+      }
+    }
+  </script>
 </body>
 </html>
