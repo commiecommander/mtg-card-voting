@@ -104,6 +104,20 @@ async function vote(cardName, powerLevel, event) {
     console.log(`Voted for ${cardName}: Power Level ${powerLevel}`);
   } catch (error) {
     console.error("Error saving vote:", error);
+
+    // Re-enable buttons if the vote fails
+    const cardElement = event.target.closest(".card-details");
+    const buttons = cardElement.querySelectorAll(".vote-buttons button");
+    buttons.forEach((button) => {
+      button.disabled = false;
+      button.style.backgroundColor = ""; // Reset button color
+    });
+
+    // Show an error message
+    const errorMessage = document.createElement("p");
+    errorMessage.textContent = "Failed to save vote. Please try again.";
+    errorMessage.style.color = "red";
+    cardElement.appendChild(errorMessage);
   }
 }
 
