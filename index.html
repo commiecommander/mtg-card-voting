@@ -3,14 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="MTG Card Voting Tool - Vote on the power level of Magic: The Gathering cards and track results in real-time.">
-  <title>MTG Card Voting Tool</title>
+  <meta name="description" content="MTG Card Voting Tool for Commander (EDH) - Vote on the power level of Magic: The Gathering cards and track results in real-time.">
+  <title>MTG Card Voting Tool for Commander</title>
   <link rel="stylesheet" href="styles.css"> <!-- Link to your CSS file -->
   <link rel="icon" href="favicon.ico" type="image/x-icon"> <!-- Favicon -->
 </head>
 <body>
   <header>
-    <h1>MTG Card Voting Tool</h1>
+    <h1>MTG Card Voting Tool for Commander</h1>
+    <p>Welcome to the community-driven power bracket voting website for <strong>Commander (EDH)</strong>. This tool empowers the community to interpret and vote on the power levels of Magic: The Gathering cards in Commander, as defined by Wizards of the Coast.</p>
   </header>
 
   <noscript>
@@ -18,7 +19,32 @@
   </noscript>
 
   <main>
+    <!-- Power Brackets Section -->
     <section>
+      <h2>Power Brackets for Commander</h2>
+      <div class="bracket-grid">
+        <div class="bracket">
+          <h3>Bracket 1</h3>
+          <p><strong>Casual Commander:</strong> Relaxed game pieces focused on fun interactions with basic investment of game mechanics. Perfect for low-power, social games.</p>
+        </div>
+        <div class="bracket">
+          <h3>Bracket 2</h3>
+          <p><strong>Average Commander:</strong> Cards that may resemble Bracket 1 with additional upsides or Bracket 3 and 4 with drawbacks or requirements. Balanced for mid-power games.</p>
+        </div>
+        <div class="bracket">
+          <h3>Bracket 3</h3>
+          <p><strong>High-Power Commander:</strong> Conditionally powerful cards that can deliver strong outcomes but are still reasonably answerable by a table. Ideal for optimized decks.</p>
+        </div>
+        <div class="bracket">
+          <h3>Bracket 4</h3>
+          <p><strong>Competitive Commander:</strong> High-power cards that make decks far more consistent. These cards are often high-salt and suggested for competitive play. Not to be confused with cEDH, which is an entirely different level of power.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Card Voting Section -->
+    <section>
+      <h2>Vote on Commander Cards</h2>
       <div id="cardContainer" class="card-grid">
         <div id="loadingSpinner" style="display: none;">Loading...</div>
         <!-- Cards will be loaded here by main.js -->
