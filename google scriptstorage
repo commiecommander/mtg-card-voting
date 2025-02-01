@@ -3,8 +3,14 @@ function doPost(e) {
   const data = JSON.parse(e.postData.contents);
   const { cardName, powerLevel, token } = data;
 
+  // Retrieve the reCAPTCHA secret key from Script Properties
+  const recaptchaSecretKey = PropertiesService.getScriptProperties().getProperty('RECAPTCHA_SECRET_KEY');
+  if (!recaptchaSecretKey) {
+    throw new Error("reCAPTCHA secret key not found in Script Properties.");
+  }
+
   // Verify reCAPTCHA token
-  const url = `https://www.google.com/recaptcha/api/siteverify?secret=6Lf07ckqAAAAAACnjlaq6xGW5yqrDEiZ-IgnZlRE&response=${token}`;
+  const url = `https://www.google.com/recaptcha/api/siteverify?secret=${recaptchaSecretKey}&response=${token}`;
   const response = UrlFetchApp.fetch(url, { method: 'POST' });
   const result = JSON.parse(response.getContentText());
 
