@@ -1,31 +1,26 @@
 function doPost(e) {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Power Level Results');
   const data = JSON.parse(e.postData.contents);
-  const { cardName, powerLevel, token } = data;
+  const { cardName, powerLevel, fingerprint } = data;
 
-  // Verify hCaptcha token
-  const url = `https://hcaptcha.com/siteverify`;
-  const payload = {
-    secret: "ES_84d37d72e51d47188d20570f5256be78", // Your hCaptcha secret key
-    response: token, // The hCaptcha token from the frontend
-  };
+  // Check if the fingerprint has already voted for this card
+  const rows = sheet.getDataRange().getValues();
+  let hasVoted = false;
 
-  const options = {
-    method: "POST",
-    payload: payload,
-  };
+  for (let i = 0; i < rows.length; i++) {
+    if (rows[i][0] === cardName && rows[i][5] === fingerprint) { // Assuming fingerprint is stored in column 6
+      hasVoted = true;
+      break;
+    }
+  }
 
-  const response = UrlFetchApp.fetch(url, options);
-  const result = JSON.parse(response.getContentText());
-
-  if (!result.success) {
-    return ContentService.createTextOutput(JSON.stringify({ success: false, error: "CAPTCHA verification failed" }))
+  if (hasVoted) {
+    return ContentService.createTextOutput(JSON.stringify({ success: false, error: "You have already voted for this card." }))
       .setMimeType(ContentService.MimeType.JSON);
   }
 
   try {
     // Find the row for the card
-    const rows = sheet.getDataRange().getValues();
     let cardRowIndex = -1;
 
     for (let i = 0; i < rows.length; i++) {
@@ -37,7 +32,7 @@ function doPost(e) {
 
     if (cardRowIndex === -1) {
       // If the card doesn't exist, add a new row
-      sheet.appendRow([cardName, 0, 0, 0, 0]); // Initialize vote counts to 0
+      sheet.appendRow([cardName, 0, 0, 0, 0, fingerprint]); // Initialize vote counts to 0 and store fingerprint
       cardRowIndex = sheet.getLastRow(); // Get the row index of the newly added row
     }
 
