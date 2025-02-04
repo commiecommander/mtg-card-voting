@@ -14,6 +14,27 @@ FingerprintJS.load()
     console.error("Error generating fingerprint:", error);
   });
 
+// Fetch the list of cards the user has already voted on
+async function fetchVotedCards(fingerprint) {
+  try {
+    const response = await fetch(
+      "https://script.google.com/macros/s/AKfycby9GxLAK01t0eMQa6MdCXRKmtFf2zX5gn-Ayx3mvavNft5C_5VzQfar4kT1eW58TOo/exec?action=getVotedCards&fingerprint=" + fingerprint,
+      {
+        method: "GET",
+        mode: 'no-cors',
+      }
+    );
+
+    if (!response.ok) throw new Error(`API request failed with status ${response.status}`);
+
+    const data = await response.json();
+    return data.votedCards || []; // Return the list of voted cards
+  } catch (error) {
+    console.error("Error fetching voted cards:", error);
+    return [];
+  }
+}
+
 async function loadCards() {
   const now = Date.now();
   if (now - lastRequestTime < voteBufferTime) {
@@ -48,12 +69,24 @@ async function loadCards() {
 
     const cards = data.data;
 
+    // Retrieve the fingerprint from localStorage
+    const fingerprint = localStorage.getItem('fingerprint');
+
+    // Fetch the list of cards the user has already voted on
+    const votedCards = await fetchVotedCards(fingerprint);
+
     // Display the cards
     const cardContainer = document.getElementById("cardContainer");
     cardContainer.innerHTML = ""; // Clear previous cards
 
     cards.forEach((cardData) => {
       const imageUrl = cardData.image_uris?.normal || cardData.card_faces?.[0]?.image_uris?.normal || '';
+
+      // Check if the user has already voted on this card
+      if (votedCards.includes(cardData.name)) {
+        return; // Skip this card
+      }
+
       cardContainer.innerHTML += `
         <div class="card-details">
           <img src="${imageUrl}" alt="Card Image of ${cardData.name}" />
@@ -119,6 +152,9 @@ async function vote(cardName, powerLevel, event) {
     confirmation.textContent = `Voted: Power Level ${powerLevel}`;
     confirmation.style.color = "green";
     cardElement.appendChild(confirmation);
+
+    // Hide the card after voting
+    cardElement.style.display = "none";
   } catch (error) {
     console.error("Error saving vote:", error);
 
