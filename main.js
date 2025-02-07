@@ -28,6 +28,7 @@ async function fetchVotedCards(fingerprint) {
     if (!response.ok) throw new Error(`API request failed with status ${response.status}`);
 
     const data = await response.json();
+    console.log("Fetched voted cards:", data.votedCards);
     return data.votedCards || []; // Return the list of voted cards
   } catch (error) {
     console.error("Error fetching voted cards:", error);
@@ -71,9 +72,11 @@ async function loadCards() {
 
     // Retrieve the fingerprint from localStorage
     const fingerprint = localStorage.getItem('fingerprint');
+    console.log("User fingerprint:", fingerprint);
 
     // Fetch the list of cards the user has already voted on
     const votedCards = await fetchVotedCards(fingerprint);
+    console.log("Cards to hide:", votedCards);
 
     // Display the cards
     const cardContainer = document.getElementById("cardContainer");
@@ -84,6 +87,7 @@ async function loadCards() {
 
       // Check if the user has already voted on this card
       if (votedCards.includes(cardData.name)) {
+        console.log("Hiding card:", cardData.name);
         return; // Skip this card
       }
 
@@ -154,6 +158,7 @@ async function vote(cardName, powerLevel, event) {
     cardElement.appendChild(confirmation);
 
     // Hide the card after voting
+    console.log("Hiding card:", cardName);
     cardElement.style.display = "none";
   } catch (error) {
     console.error("Error saving vote:", error);
