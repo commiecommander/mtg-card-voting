@@ -18,7 +18,7 @@ FingerprintJS.load()
 async function fetchVotedCards(fingerprint) {
   try {
     const response = await fetch(
-      "https://script.google.com/macros/s/AKfycby9GxLAK01t0eMQa6MdCXRKmtFf2zX5gn-Ayx3mvavNft5C_5VzQfar4kT1eW58TOo/exec?action=getVotedCards&fingerprint=" + fingerprint,
+      "https://script.google.com/macros/s/AKfycby9GxLAK01t0eMQaA6MdCXRKmtFf2zX5gn-Ayx3mvavNft5C_5VzQfar4kT1eW58TOo/exec?action=getVotedCards&fingerprint=" + fingerprint,
       {
         method: "GET",
         mode: 'no-cors',
@@ -29,7 +29,7 @@ async function fetchVotedCards(fingerprint) {
 
     const data = await response.json();
     console.log("Fetched voted cards:", data.votedCards);
-    return data.votedCards || []; // Return the list of voted cards
+    return data.votedCards || [];
   } catch (error) {
     console.error("Error fetching voted cards:", error);
     return [];
@@ -140,7 +140,7 @@ async function vote(cardName, powerLevel, event) {
   try {
     // Send vote to backend with fingerprint
     const response = await fetch(
-      "https://script.google.com/macros/s/AKfycby9GxLAK01t0eMQa6MdCXRKmtFf2zX5gn-Ayx3mvavNft5C_5VzQfar4kT1eW58TOo/exec",
+      "https://script.google.com/macros/s/AKfycby9GxLAK01t0eMQaA6MdCXRKmtFf2zX5gn-Ayx3mvavNft5C_5VzQfar4kT1eW58TOo/exec",
       {
         method: "POST",
         headers: {
