@@ -1,8 +1,8 @@
 function doGet(e) {
   console.log("Received GET request:", e);
   if (e.parameter.action === "getVotedCards") {
-    const email = e.parameter.email; // Use email instead of fingerprint
-    console.log("Fetching voted cards for email:", email);
+    const fingerprint = e.parameter.fingerprint;
+    console.log("Fetching voted cards for fingerprint:", fingerprint);
 
     const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Power Level Results');
     if (!sheet) {
@@ -15,7 +15,7 @@ function doGet(e) {
     const votedCards = [];
 
     for (let i = 0; i < rows.length; i++) {
-      if (rows[i][5] === email) { // Assuming email is stored in column 6
+      if (rows[i][5] === fingerprint) { // Assuming fingerprint is stored in column 6
         votedCards.push(rows[i][0]); // Assuming card name is stored in column 1
       }
     }
@@ -36,7 +36,7 @@ function doPost(e) {
   }
 
   const data = JSON.parse(e.postData.contents);
-  const { cardName, powerLevel, email } = data; // Use email instead of fingerprint
+  const { cardName, powerLevel, fingerprint } = data;
   console.log("Received data:", data);
 
   try {
@@ -53,7 +53,7 @@ function doPost(e) {
 
     if (cardRowIndex === -1) {
       // If the card doesn't exist, add a new row
-      sheet.appendRow([cardName, 0, 0, 0, 0, email]); // Initialize vote counts to 0 and store email
+      sheet.appendRow([cardName, 0, 0, 0, 0, fingerprint]); // Initialize vote counts to 0 and store fingerprint
       cardRowIndex = sheet.getLastRow(); // Get the row index of the newly added row
     }
 
