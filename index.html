@@ -7,25 +7,8 @@
   <title>MTG Card Voting Tool for Commander</title>
   <link rel="stylesheet" href="styles.css"> <!-- Link to your CSS file -->
   <link rel="icon" href="favicon.ico" type="image/x-icon"> <!-- Favicon -->
-  <!-- Add Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js"></script>
-  <script>
-    // Your Firebase configuration
-    const firebaseConfig = {
-      apiKey: "AIzaSyDvO199_kPAA1jek0ry0cL3bn0mJr1VCyk",
-      authDomain: "mtg-voting-auth.firebaseapp.com",
-      projectId: "mtg-voting-auth",
-      storageBucket: "mtg-voting-auth.appspot.com",
-      messagingSenderId: "131890938774",
-      appId: "1:131890938774:web:57c43046808ad0965293b7",
-      measurementId: "G-LZ30XMQDGD"
-    };
-
-    // Initialize Firebase
-    const app = firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-  </script>
+  <!-- Add FingerprintJS script -->
+  <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
 </head>
 <body>
   <header>
@@ -37,15 +20,7 @@
     <p style="color: red; text-align: center;">JavaScript is required for this tool to function properly. Please enable JavaScript in your browser.</p>
   </noscript>
 
-  <!-- Login Section -->
-  <div id="auth-section">
-    <h2>Login or Sign Up</h2>
-    <input type="email" id="email" placeholder="Enter your email" />
-    <button onclick="sendMagicLink()">Send Magic Link</button>
-    <p id="auth-message" style="color: green;"></p>
-  </div>
-
-  <main style="display: none;"> <!-- Hide main content until logged in -->
+  <main>
     <!-- Power Brackets Section -->
     <section>
       <h2>Power Brackets for Commander</h2>
