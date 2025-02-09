@@ -3,56 +3,22 @@ const voteBufferTime = 10000; // 10 seconds in milliseconds
 let currentPage = 1; // Track the current page of cards
 const maxPages = 10; // Maximum number of pages to load
 
-// Function to send a magic link for email authentication
-function sendMagicLink() {
-  const email = document.getElementById('email').value;
-  const actionCodeSettings = {
-    url: 'https://commiecommander.github.io/mtg-card-voting/', // Replace with your GitHub Pages URL
-    handleCodeInApp: true,
-  };
-
-  auth
-    .sendSignInLinkToEmail(email, actionCodeSettings)
-    .then(() => {
-      // Save the email to localStorage
-      localStorage.setItem('emailForSignIn', email);
-      document.getElementById('auth-message').textContent = 'Check your email for the magic link!';
-    })
-    .catch((error) => {
-      console.error('Error sending magic link:', error);
-      document.getElementById('auth-message').textContent = 'Error sending magic link. Please try again.';
-    });
-}
-
-// Check if the user is coming back from a magic link
-if (auth.isSignInWithEmailLink(window.location.href)) {
-  const email = localStorage.getItem('emailForSignIn');
-  if (!email) {
-    alert('Please enter your email to complete login.');
-    return;
-  }
-
-  auth
-    .signInWithEmailLink(email, window.location.href)
-    .then((result) => {
-      // Clear the email from localStorage
-      localStorage.removeItem('emailForSignIn');
-      document.getElementById('auth-message').textContent = 'Login successful!';
-      // Hide the auth section and show the voting section
-      document.getElementById('auth-section').style.display = 'none';
-      document.querySelector('main').style.display = 'block';
-    })
-    .catch((error) => {
-      console.error('Error signing in:', error);
-      document.getElementById('auth-message').textContent = 'Error signing in. Please try again.';
-    });
-}
+// Initialize FingerprintJS
+FingerprintJS.load()
+  .then((fp) => fp.get())
+  .then((result) => {
+    const fingerprint = result.visitorId; // Unique fingerprint
+    localStorage.setItem('fingerprint', fingerprint); // Store fingerprint in localStorage
+  })
+  .catch((error) => {
+    console.error("Error generating fingerprint:", error);
+  });
 
 // Fetch the list of cards the user has already voted on
-async function fetchVotedCards(email) {
+async function fetchVotedCards(fingerprint) {
   try {
     const response = await fetch(
-      "https://script.google.com/macros/s/AKfycby9GxLAK01t0eMQaA6MdCXRKmtFf2zX5gn-Ayx3mvavNft5C_5VzQfar4kT1eW58TOo/exec?action=getVotedCards&email=" + email,
+      "https://script.google.com/macros/s/AKfycby9GxLAK01t0eMQaA6MdCXRKmtFf2zX5gn-Ayx3mvavNft5C_5VzQfar4kT1eW58TOo/exec?action=getVotedCards&fingerprint=" + fingerprint,
       {
         method: "GET",
         mode: 'no-cors',
@@ -104,16 +70,12 @@ async function loadCards() {
 
     const cards = data.data;
 
-    // Retrieve the user's email from Firebase
-    const user = auth.currentUser;
-    if (!user) {
-      alert('Please log in to vote.');
-      return;
-    }
-    const email = user.email;
+    // Retrieve the fingerprint from localStorage
+    const fingerprint = localStorage.getItem('fingerprint');
+    console.log("User fingerprint:", fingerprint);
 
     // Fetch the list of cards the user has already voted on
-    const votedCards = await fetchVotedCards(email);
+    const votedCards = await fetchVotedCards(fingerprint);
     console.log("Cards to hide:", votedCards);
 
     // Display the cards
@@ -162,13 +124,12 @@ async function vote(cardName, powerLevel, event) {
   const cardElement = event.target.closest(".card-details");
   const buttons = cardElement.querySelectorAll(".vote-buttons button");
 
-  // Retrieve the user's email from Firebase
-  const user = auth.currentUser;
-  if (!user) {
-    alert('Please log in to vote.');
+  // Retrieve the fingerprint from localStorage
+  const fingerprint = localStorage.getItem('fingerprint');
+  if (!fingerprint) {
+    alert("Unable to verify your browser. Please refresh the page and try again.");
     return;
   }
-  const email = user.email;
 
   // Disable buttons and show loading state
   buttons.forEach((button) => {
@@ -177,7 +138,7 @@ async function vote(cardName, powerLevel, event) {
   });
 
   try {
-    // Send vote to backend with email
+    // Send vote to backend with fingerprint
     const response = await fetch(
       "https://script.google.com/macros/s/AKfycby9GxLAK01t0eMQaA6MdCXRKmtFf2zX5gn-Ayx3mvavNft5C_5VzQfar4kT1eW58TOo/exec",
       {
@@ -185,7 +146,7 @@ async function vote(cardName, powerLevel, event) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ cardName, powerLevel, email }),
+        body: JSON.stringify({ cardName, powerLevel, fingerprint }),
         mode: 'no-cors',
       }
     );
