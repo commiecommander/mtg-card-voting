@@ -7,7 +7,7 @@ const maxPages = 10; // Maximum number of pages to load
 function sendMagicLink() {
   const email = document.getElementById('email').value;
   const actionCodeSettings = {
-    url: 'https://YOUR_GITHUB_PAGES_URL', // Replace with your GitHub Pages URL
+    url: 'https://commiecommander.github.io/mtg-card-voting/', // Replace with your GitHub Pages URL
     handleCodeInApp: true,
   };
 
