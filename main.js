@@ -9,7 +9,6 @@ FingerprintJS.load()
   .then((result) => {
     const fingerprint = result.visitorId; // Unique fingerprint
     localStorage.setItem('fingerprint', fingerprint); // Store fingerprint in localStorage
-    loadCards(); // Load cards after fingerprint is generated
   })
   .catch((error) => {
     console.error("Error generating fingerprint:", error);
@@ -19,7 +18,7 @@ FingerprintJS.load()
 async function fetchVotedCards(fingerprint) {
   try {
     const response = await fetch(
-      "https://script.google.com/macros/s/YOUR_GOOGLE_SCRIPT_URL/exec?action=getVotedCards&fingerprint=" + fingerprint,
+      "https://script.google.com/macros/s/AKfycby9GxLAK01t0eMQaA6MdCXRKmtFf2zX5gn-Ayx3mvavNft5C_5VzQfar4kT1eW58TOo/exec?action=getVotedCards&fingerprint=" + fingerprint,
       {
         method: "GET",
         mode: 'no-cors',
@@ -141,7 +140,7 @@ async function vote(cardName, powerLevel, event) {
   try {
     // Send vote to backend with fingerprint
     const response = await fetch(
-      "https://script.google.com/macros/s/YOUR_GOOGLE_SCRIPT_URL/exec",
+      "https://script.google.com/macros/s/AKfycby9GxLAK01t0eMQaA6MdCXRKmtFf2zX5gn-Ayx3mvavNft5C_5VzQfar4kT1eW58TOo/exec",
       {
         method: "POST",
         headers: {
@@ -173,15 +172,4 @@ async function vote(cardName, powerLevel, event) {
 }
 
 // Load the first set of cards when the page loads
-window.onload = () => {
-  FingerprintJS.load()
-    .then((fp) => fp.get())
-    .then((result) => {
-      const fingerprint = result.visitorId;
-      localStorage.setItem('fingerprint', fingerprint);
-      loadCards();
-    })
-    .catch((error) => {
-      console.error("Error generating fingerprint:", error);
-    });
-};
+window.onload = loadCards;
