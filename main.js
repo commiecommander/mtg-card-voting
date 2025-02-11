@@ -101,11 +101,11 @@ async function loadCards() {
           <p><strong>Power/Toughness:</strong> ${cardData.power ? `${cardData.power}/${cardData.toughness}` : 'N/A'}</p>
           <p><strong>EDHREC Rank:</strong> ${cardData.edhrec_rank || 'N/A'}</p>
           <div class="vote-buttons">
-            <button onclick="vote('${cardData.name}', 1, event)">Power Level 1</button>
-            <button onclick="vote('${cardData.name}', 2, event)">Power Level 2</button>
-            <button onclick="vote('${cardData.name}', 3, event)">Power Level 3</button>
-            <button onclick="vote('${cardData.name}', 4, event)">Power Level 4</button>
-            <button onclick="vote('${cardData.name}', 0, event)">Not Ready to Vote</button>
+            <button onclick="vote('${cardData.name}', 1, event)">Power Level 1 (Exhibition)</button>
+            <button onclick="vote('${cardData.name}', 2, event)">Power Level 2 (Core)</button>
+            <button onclick="vote('${cardData.name}', 3, event)">Power Level 3 (Upgraded)</button>
+            <button onclick="vote('${cardData.name}', 4, event)">Power Level 4 (Optimized)</button>
+            <button onclick="vote('${cardData.name}', 5, event)">Power Level 5 (cEDH)</button>
           </div>
         </div>
       `;
