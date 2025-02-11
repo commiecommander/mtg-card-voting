@@ -1,31 +1,3 @@
-function doGet(e) {
-  console.log("Received GET request:", e);
-  if (e.parameter.action === "getVotedCards") {
-    const fingerprint = e.parameter.fingerprint;
-    console.log("Fetching voted cards for fingerprint:", fingerprint);
-
-    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Power Level Results');
-    if (!sheet) {
-      console.error("Sheet 'Power Level Results' not found.");
-      return ContentService.createTextOutput(JSON.stringify({ error: "Sheet not found" }))
-        .setMimeType(ContentService.MimeType.JSON);
-    }
-
-    const rows = sheet.getDataRange().getValues();
-    const votedCards = [];
-
-    for (let i = 0; i < rows.length; i++) {
-      if (rows[i][5] === fingerprint) { // Assuming fingerprint is stored in column 6
-        votedCards.push(rows[i][0]); // Assuming card name is stored in column 1
-      }
-    }
-
-    console.log("Voted cards:", votedCards);
-    return ContentService.createTextOutput(JSON.stringify({ votedCards }))
-      .setMimeType(ContentService.MimeType.JSON);
-  }
-}
-
 function doPost(e) {
   console.log("Received POST request:", e);
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Power Level Results');
@@ -53,13 +25,13 @@ function doPost(e) {
 
     if (cardRowIndex === -1) {
       // If the card doesn't exist, add a new row
-      sheet.appendRow([cardName, 0, 0, 0, 0, fingerprint]); // Initialize vote counts to 0 and store fingerprint
+      sheet.appendRow([cardName, 0, 0, 0, 0, 0, fingerprint]); // Initialize vote counts to 0 and store fingerprint
       cardRowIndex = sheet.getLastRow(); // Get the row index of the newly added row
     }
 
     // Update the vote count for the selected power level
-    if (powerLevel >= 1 && powerLevel <= 4) {
-      const voteColumn = powerLevel + 1; // Columns are 1-indexed (Power Level 1 = Column 2, etc.)
+    if (powerLevel >= 1 && powerLevel <= 5) {
+      const voteColumn = powerLevel + 1; // Columns are 1-indexed (Exhibition = Column 2, Core = Column 3, etc.)
       const currentVotes = sheet.getRange(cardRowIndex, voteColumn).getValue();
       sheet.getRange(cardRowIndex, voteColumn).setValue(currentVotes + 1);
     }
