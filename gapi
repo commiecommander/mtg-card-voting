@@ -45,7 +45,7 @@ function doPost(e) {
     let cardRowIndex = -1;
 
     for (let i = 0; i < rows.length; i++) {
-      if (rows[i][0] === cardName) {
+      if (rows[i][0] === cardName && rows[i][5] === fingerprint) {
         cardRowIndex = i + 1; // Rows are 1-indexed in Google Sheets
         break;
       }
