@@ -3,69 +3,62 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="MTG Card Voting Tool for Commander (EDH) - Vote on the power level of Magic: The Gathering cards and track results in real-time.">
-  <title>MTG Card Voting Tool for Commander</title>
+  <meta name="description" content="MTG Commander Tools - A collection of community-driven tools for voting, deck analysis, and more for Magic: The Gathering Commander (EDH).">
+  <title>MTG Commander Tools</title>
   <link rel="stylesheet" href="styles.css"> <!-- Link to your CSS file -->
   <link rel="icon" href="favicon.ico" type="image/x-icon"> <!-- Favicon -->
-  <!-- Add FingerprintJS script -->
-  <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
 </head>
 <body>
   <header>
-    <h1>MTG Card Voting Tool for Commander</h1>
-    <p>Welcome to the community-driven power bracket voting website for <strong>Commander (EDH)</strong>. This tool empowers the community to interpret and vote on the power levels of Magic: The Gathering cards in Commander, as defined by Wizards of the Coast.</p>
-    <p>For a detailed explanation of the new Commander Brackets system, visit <a href="https://magic.wizards.com/en/news/announcements/introducing-commander-brackets-beta" target="_blank">this link</a>.</p>
+    <h1>MTG Commander Tools</h1>
+    <p>Welcome to the community-driven tools for Magic: The Gathering Commander (EDH). Explore the tools below to vote on card power levels, analyze decks, and more!</p>
   </header>
 
-  <noscript>
-    <p style="color: red; text-align: center;">JavaScript is required for this tool to function properly. Please enable JavaScript in your browser.</p>
-  </noscript>
-
   <main>
-    <!-- Power Brackets Section -->
+    <!-- Tool Navigation Section -->
     <section>
-      <h2>Power Brackets for Commander</h2>
-      <div class="bracket-grid">
-        <div class="bracket">
-          <h3>Bracket 1: Exhibition</h3>
-          <p><strong>Casual Commander:</strong> Ultra-casual, thematic decks with no focus on winning. No Game Changers, infinite combos, or mass land denial.</p>
+      <h2>Tools</h2>
+      <div class="tool-grid">
+        <!-- Power Level Voting Tool -->
+        <div class="tool-card">
+          <h3>Power Level Voting</h3>
+          <p>Vote on the power level of Commander cards (Exhibition, Core, Upgraded, Optimized, cEDH).</p>
+          <a href="powerlevel.html" class="tool-button">Go to Power Level Voting</a>
         </div>
-        <div class="bracket">
-          <h3>Bracket 2: Core</h3>
-          <p><strong>Average Commander:</strong> Similar to average preconstructed decks. No Game Changers, infinite combos, or mass land denial. Tutors and extra-turn cards are limited.</p>
-        </div>
-        <div class="bracket">
-          <h3>Bracket 3: Upgraded</h3>
-          <p><strong>High-Power Commander:</strong> Stronger than preconstructed decks, with up to three Game Changers allowed. No early-game infinite combos or mass land denial.</p>
-        </div>
-        <div class="bracket">
-          <h3>Bracket 4: Optimized</h3>
-          <p><strong>High-Power Optimization:</strong> High-powered decks with no restrictions (other than the banned list). Explosive starts, strong tutors, and combos are common.</p>
-        </div>
-        <div class="bracket">
-          <h3>Bracket 5: cEDH</h3>
-          <p><strong>Competitive Commander:</strong> Competitive Commander with a focus on tournament play and metagame. No restrictions (other than the banned list).</p>
-        </div>
-      </div>
-    </section>
 
-    <!-- Card Voting Section -->
-    <section>
-      <h2>Vote on Commander Cards</h2>
-      <div id="cardContainer" class="card-grid">
-        <div id="loadingSpinner" style="display: none;">Loading...</div>
-        <!-- Cards will be loaded here by main.js -->
+        <!-- Game Changers Voting Tool -->
+        <div class="tool-card">
+          <h3>Game Changers Voting</h3>
+          <p>Vote on whether a card is a "Game Changer" or not in Commander.</p>
+          <a href="gamechangers.html" class="tool-button">Go to Game Changers Voting</a>
+        </div>
+
+        <!-- Vibe Score Voting Tool -->
+        <div class="tool-card">
+          <h3>Vibe Score Voting</h3>
+          <p>Rate cards on a scale of 0–3 based on how much joy or salt they bring to the table.</p>
+          <a href="thevibescore.html" class="tool-button">Go to Vibe Score Voting</a>
+        </div>
+
+        <!-- Deck Check Tool -->
+        <div class="tool-card">
+          <h3>Deck Check</h3>
+          <p>Analyze your deck's power level, Game Changers, and Vibe Score based on community data.</p>
+          <a href="deckcheck.html" class="tool-button">Go to Deck Check</a>
+        </div>
+
+        <!-- Polling Questions Tool -->
+        <div class="tool-card">
+          <h3>Polling Questions</h3>
+          <p>Answer quick, one-shot questions about Commander and Magic: The Gathering.</p>
+          <a href="pollingquestions.html" class="tool-button">Go to Polling Questions</a>
+        </div>
       </div>
-      <button id="nextCardButton" onclick="loadCards()" aria-label="Load next 10 cards">Next 10 Cards</button>
     </section>
   </main>
 
   <footer>
-    <div id="results" aria-live="polite">
-      <!-- Voting results will be displayed here -->
-    </div>
+    <p>Created by [Your Name] | Community-Driven MTG Commander Tools</p>
   </footer>
-
-  <script src="main.js"></script> <!-- Link to your JavaScript file -->
 </body>
 </html>
