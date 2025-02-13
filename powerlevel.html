@@ -1,1 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="MTG Card Voting Tool for Commander (EDH) - Vote on the power level of Magic: The Gathering cards and track results in real-time.">
+  <title>MTG Card Voting Tool for Commander</title>
+  <link rel="stylesheet" href="styles.css"> <!-- Link to your CSS file -->
+  <link rel="icon" href="favicon.ico" type="image/x-icon"> <!-- Favicon -->
+  <!-- Add FingerprintJS script -->
+  <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
+</head>
+<body>
+  <header>
+    <h1>MTG Card Voting Tool for Commander</h1>
+    <p>Welcome to the community-driven power level voting tool for <strong>Commander (EDH)</strong>. This tool empowers the community to interpret and vote on the power levels of Magic: The Gathering cards in Commander, based on how they impact the game and the overall experience.</p>
+    <p>This system is designed to give players a way to assign power levels to cards based on their impact, rather than relying solely on predefined categories. Below, you'll find descriptions of each power level to help guide your voting.</p>
+  </header>
 
+  <noscript>
+    <p style="color: red; text-align: center;">JavaScript is required for this tool to function properly. Please enable JavaScript in your browser.</p>
+  </noscript>
+
+  <main>
+    <!-- Power Brackets Section -->
+    <section>
+      <h2>Power Levels for Commander</h2>
+      <div class="bracket-grid">
+        <div class="bracket">
+          <h3>Power Level 1: Exhibition</h3>
+          <p><strong>Ultra-Casual:</strong> These are cards you’ll see in almost any game. They’re often thematic, fun, and not focused on winning. Think of them as the foundation of casual, exhibition-style games where the goal is to enjoy the experience rather than dominate.</p>
+        </div>
+        <div class="bracket">
+          <h3>Power Level 2: Core</h3>
+          <p><strong>Precon-Level:</strong> These cards are the backbone of most preconstructed decks. They’re solid, reliable, and form the foundation of many decks. While they’re not game-winners on their own, they’re essential for building a functional deck. Examples include cards like <em>Sol Ring</em> or <em>Cultivate</em>.</p>
+        </div>
+        <div class="bracket">
+          <h3>Power Level 3: Upgraded</h3>
+          <p><strong>Optimized Play:</strong> These are cards that take a deck to the next level. They’re often better versions of cards found in precons and are included with a specific game plan in mind. They’re powerful but not overwhelming, and they allow decks to run more smoothly without completely dominating the game.</p>
+        </div>
+        <div class="bracket">
+          <h3>Power Level 4: Optimized</h3>
+          <p><strong>High-Power Play:</strong> These cards are highly impactful and can swing games in a major way. They often demand immediate answers and can win games outright if left unchecked. They’re the kind of cards you’d expect to see in high-powered games, where players are looking for strong, synergistic strategies.</p>
+        </div>
+        <div class="bracket">
+          <h3>Power Level 5: cEDH</h3>
+          <p><strong>Competitive Play:</strong> These cards are the backbone of competitive Commander (cEDH) decks. They’re designed to win games as efficiently as possible, often through combos, fast mana, or overwhelming card advantage. While they’re still part of Commander, they’re focused on the metagame and tournament play.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Card Voting Section -->
+    <section>
+      <h2>Vote on Commander Cards</h2>
+      <div id="cardContainer" class="card-grid">
+        <div id="loadingSpinner" style="display: none;">Loading...</div>
+        <!-- Cards will be loaded here by main.js -->
+      </div>
+      <button id="nextCardButton" onclick="loadCards()" aria-label="Load next 10 cards">Next 10 Cards</button>
+    </section>
+  </main>
+
+  <footer>
+    <div id="results" aria-live="polite">
+      <!-- Voting results will be displayed here -->
+    </div>
+  </footer>
+
+  <script src="main.js"></script> <!-- Link to your JavaScript file -->
+</body>
+</html>
