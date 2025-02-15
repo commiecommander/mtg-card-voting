@@ -55,7 +55,7 @@ async function loadCards() {
 
     // Fetch commanders sorted by EDHREC rank (limited to 4 cards per page)
     const response = await fetch(
-      `https://api.scryfall.com/cards/search?q=is%3Acommander+game%3Apaper&order=edhrec&unique=cards&page=${currentPage}&page_size=4`
+      `https://api.scryfall.com/cards/search?q=is%3Acommander+legal%3Acommander&order=edhrec&unique=cards&page=${currentPage}&page_size=4`
     );
 
     if (!response.ok) throw new Error(`API request failed with status ${response.status}`);
