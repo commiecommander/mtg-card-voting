@@ -1,3 +1,49 @@
+/* General Styles */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Modern font */
+  margin: 0;
+  padding: 0;
+  background-color: #f4f4f4;
+  color: #333;
+  text-align: center;
+}
+
+/* Header Styles */
+header {
+  background-color: #2c3e50; /* Dark, modern background color */
+  color: #fff;
+  padding: 40px 20px; /* Increased padding for a spacious look */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+header h1 {
+  margin: 0;
+  font-size: 2.5rem; /* Larger font size for emphasis */
+  font-weight: 600; /* Semi-bold for a modern look */
+  letter-spacing: -0.5px; /* Slightly tighter letter spacing */
+}
+
+header p {
+  margin: 10px 0 0;
+  font-size: 1.1rem; /* Slightly larger paragraph text */
+  color: #ecf0f1; /* Light gray for better readability */
+  line-height: 1.6; /* Improved line spacing */
+  max-width: 800px; /* Limit width for better readability */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Optional: Add a gradient background for extra flair */
+header {
+  background: linear-gradient(135deg, #2c3e50, #34495e); /* Gradient background */
+}
+
+/* Optional: Add a subtle animation on hover for the header */
+header:hover {
+  background: linear-gradient(135deg, #34495e, #2c3e50); /* Reverse gradient on hover */
+  transition: background 0.3s ease; /* Smooth transition */
+}
+
 /* Card Grid */
 .card-grid {
   display: grid;
@@ -71,4 +117,13 @@
 
 #nextCardButton:hover {
   background-color: #218838;
+}
+
+/* Results Section */
+#results {
+  margin-top: 20px;
+  padding: 20px;
+  background-color: #333;
+  color: #fff;
+  font-size: 1rem;
 }
