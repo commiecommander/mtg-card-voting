@@ -50,12 +50,12 @@ async function loadCards() {
   }
 
   try {
-    // Hide the "Next 3 Cards" button while loading
+    // Hide the "Next 10 Cards" button while loading
     document.getElementById("nextCardButton").style.display = "none";
 
-    // Fetch commanders sorted by EDHREC rank (limited to 3 cards per page)
+    // Fetch commanders sorted by EDHREC rank (limited to 4 cards per page)
     const response = await fetch(
-      `https://api.scryfall.com/cards/search?q=is%3Acommander+game%3Apaper&order=edhrec&unique=cards&page=${currentPage}&page_size=3`
+      `https://api.scryfall.com/cards/search?q=is%3Acommander+game%3Apaper&order=edhrec&unique=cards&page=${currentPage}&page_size=4`
     );
 
     if (!response.ok) throw new Error(`API request failed with status ${response.status}`);
@@ -111,7 +111,7 @@ async function loadCards() {
       `;
     });
 
-    // Show the "Next 3 Cards" button
+    // Show the "Next 10 Cards" button
     document.getElementById("nextCardButton").style.display = "block";
     currentPage++; // Move to next page for future calls
   } catch (error) {
