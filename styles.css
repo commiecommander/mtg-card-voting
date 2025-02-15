@@ -1,42 +1,74 @@
-/* General Styles */
-body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  background-color: #f4f4f4;
-  color: #333;
-  text-align: center;
-}
-
-/* Header Styles */
-header {
-  background-color: #333;
-  color: #fff;
-  padding: 20px 0;
-}
-
-/* Tool Card Styles (Used in Multiple Pages) */
-.tool-card {
-  background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 20px;
-  text-align: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* Power Level Voting Page Specific Styles */
-.bracket-grid {
+/* Card Grid */
+.card-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 10px;
+  grid-template-columns: repeat(4, 1fr); /* 4 columns for 4 cards per row */
+  gap: 20px; /* Space between cards */
   margin-bottom: 20px;
 }
 
-/* Game Changers Voting Page Specific Styles */
-.gamechanger-card {
-  background-color: #f9f9f9;
-  border: 1px solid #ccc;
+.card-details {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
   padding: 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-align: left;
+}
+
+.card-details img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
   margin-bottom: 10px;
+}
+
+.card-details p {
+  margin: 5px 0;
+  font-size: 0.9rem;
+}
+
+.card-details p strong {
+  font-weight: bold;
+}
+
+/* Vote Buttons */
+.vote-buttons {
+  display: flex;
+  flex-direction: column; /* Stack buttons vertically */
+  gap: 8px; /* Space between buttons */
+  margin-top: 10px;
+}
+
+.vote-buttons button {
+  width: 100%; /* Full width buttons */
+  padding: 10px;
+  font-size: 0.9rem;
+  color: #fff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.vote-buttons button:hover {
+  background-color: #0056b3;
+}
+
+/* Next Button */
+#nextCardButton {
+  display: none;
+  margin: 20px auto;
+  padding: 10px 20px;
+  font-size: 1rem;
+  color: #fff;
+  background-color: #28a745;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#nextCardButton:hover {
+  background-color: #218838;
 }
