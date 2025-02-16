@@ -1,8 +1,9 @@
 /* Power Levels Section */
 .power-levels {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr); /* 5 columns for 5 power levels */
+  display: flex; /* Use flexbox for flexible layout */
+  flex-wrap: wrap; /* Allow boxes to wrap to the next line */
   gap: 20px; /* Space between boxes */
+  justify-content: center; /* Center the boxes horizontally */
   margin-bottom: 40px; /* Space below the section */
 }
 
@@ -13,6 +14,9 @@
   padding: 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   text-align: center;
+  flex: 1 1 calc(20% - 40px); /* 5 boxes per row with spacing */
+  max-width: calc(20% - 40px); /* Limit width for larger screens */
+  min-width: 250px; /* Minimum width for smaller screens */
 }
 
 .power-level-box h3 {
@@ -26,23 +30,4 @@
   color: #666;
   line-height: 1.5; /* Improved readability */
   margin: 10px 0 0;
-}
-
-/* Responsive Design */
-@media (max-width: 1200px) {
-  .power-levels {
-    grid-template-columns: repeat(3, 1fr); /* 3 columns for medium screens */
-  }
-}
-
-@media (max-width: 768px) {
-  .power-levels {
-    grid-template-columns: repeat(2, 1fr); /* 2 columns for tablets */
-  }
-}
-
-@media (max-width: 480px) {
-  .power-levels {
-    grid-template-columns: 1fr; /* 1 column for mobile */
-  }
 }
