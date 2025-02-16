@@ -112,16 +112,41 @@ header p {
   width: 100%; /* Full width buttons */
   padding: 10px;
   font-size: 0.9rem;
-  color: #fff;
-  background-color: #007bff;
+  color: #fff; /* White text for better contrast */
   border: none;
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
+/* Power Level 1: Exhibition (Light Green) */
+.vote-buttons button[onclick*="1"] {
+  background-color: #77dd77; /* Light green */
+}
+
+/* Power Level 2: Core (Medium Green) */
+.vote-buttons button[onclick*="2"] {
+  background-color: #5cb85c; /* Medium green */
+}
+
+/* Power Level 3: Upgraded (Yellow) */
+.vote-buttons button[onclick*="3"] {
+  background-color: #ffcc00; /* Yellow */
+}
+
+/* Power Level 4: Optimized (Orange) */
+.vote-buttons button[onclick*="4"] {
+  background-color: #ff8c42; /* Orange */
+}
+
+/* Power Level 5: cEDH (Red) */
+.vote-buttons button[onclick*="5"] {
+  background-color: #ff4d4d; /* Red */
+}
+
+/* Hover Effects */
 .vote-buttons button:hover {
-  background-color: #0056b3;
+  filter: brightness(90%); /* Slightly darken the button on hover */
 }
 
 /* Next Button */
