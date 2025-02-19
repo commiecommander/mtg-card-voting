@@ -12,25 +12,42 @@ body {
 header {
   background: linear-gradient(135deg, #2c3e50, #34495e); /* Gradient background */
   color: #fff;
-  padding: 40px 20px; /* Increased padding for a spacious look */
+  padding: 60px 20px; /* Increased padding for more vertical space */
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  text-align: center; /* Ensure everything is centered */
 }
 
 header h1 {
   margin: 0;
-  font-size: 2.5rem; /* Larger font size for emphasis */
+  font-size: 2.8rem; /* Slightly larger font size for emphasis */
   font-weight: 600; /* Semi-bold for a modern look */
   letter-spacing: -0.5px; /* Slightly tighter letter spacing */
+  margin-bottom: 20px; /* Add space below the heading */
 }
 
 header p {
-  margin: 10px 0 0;
+  margin: 0 auto; /* Center the paragraphs */
   font-size: 1.1rem; /* Slightly larger paragraph text */
   color: #ecf0f1; /* Light gray for better readability */
-  line-height: 1.6; /* Improved line spacing */
+  line-height: 1.8; /* Improved line spacing */
   max-width: 800px; /* Limit width for better readability */
-  margin-left: auto;
-  margin-right: auto;
+  margin-bottom: 15px; /* Space between paragraphs */
+}
+
+header p:last-child {
+  margin-bottom: 0; /* Remove bottom margin for the last paragraph */
+}
+
+header a {
+  color: #1abc9c; /* Accent color for links */
+  text-decoration: none; /* Remove underline */
+  font-weight: 500; /* Slightly bold for emphasis */
+  transition: color 0.3s ease; /* Smooth transition for hover effect */
+}
+
+header a:hover {
+  color: #16a085; /* Darker shade on hover */
+  text-decoration: underline; /* Add underline on hover */
 }
 
 /* Power Levels Section */
