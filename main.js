@@ -15,25 +15,26 @@ FingerprintJS.load()
   });
 
 // Fetch the list of cards the user has already voted on
-async function fetchVotedCards(fingerprint) {
-  try {
-    const response = await fetch(
-      "https://script.google.com/macros/s/AKfycby9GxLAK01t0eMQaA6MdCXRKmtFf2zX5gn-Ayx3mvavNft5C_5VzQfar4kT1eW58TOo/exec?action=getVotedCards&fingerprint=" + fingerprint,
-      {
-        method: "GET",
-        mode: 'no-cors',
-      }
-    );
+function fetchVotedCards(fingerprint) {
+  return new Promise((resolve, reject) => {
+    const callbackName = `jsonpCallback_${Date.now()}`;
+    const script = document.createElement("script");
 
-    if (!response.ok) throw new Error(`API request failed with status ${response.status}`);
+    window[callbackName] = (data) => {
+      delete window[callbackName];
+      document.body.removeChild(script);
+      resolve(data.votedCards || []);
+    };
 
-    const data = await response.json();
-    console.log("Fetched voted cards:", data.votedCards);
-    return data.votedCards || [];
-  } catch (error) {
-    console.error("Error fetching voted cards:", error);
-    return [];
-  }
+    script.src = `https://script.google.com/macros/s/AKfycby9GxLAK01t0eMQaA6MdCXRKmtFf2zX5gn-Ayx3mvavNft5C_5VzQfar4kT1eW58TOo/exec?action=getVotedCards&fingerprint=${fingerprint}&callback=${callbackName}`;
+    document.body.appendChild(script);
+
+    script.onerror = () => {
+      delete window[callbackName];
+      document.body.removeChild(script);
+      reject(new Error("Failed to fetch voted cards."));
+    };
+  });
 }
 
 async function loadCards() {
@@ -61,14 +62,7 @@ async function loadCards() {
     if (!response.ok) throw new Error(`API request failed with status ${response.status}`);
 
     const data = await response.json();
-    console.log("API Response:", {
-      totalCards: data.total_cards, // Total number of cards matching the query
-      cardsFetched: data.data.length, // Number of cards fetched in this request
-      cards: data.data, // The actual cards returned
-    });
-    if (!data.data || data.data.length === 0) throw new Error("No cards found.");
-
-    const cards = data.data;
+    console.log("API Response:", data);
 
     // Retrieve the fingerprint from localStorage
     const fingerprint = localStorage.getItem('fingerprint');
@@ -82,7 +76,7 @@ async function loadCards() {
     const cardContainer = document.getElementById("cardContainer");
     cardContainer.innerHTML = ""; // Clear previous cards
 
-    cards.forEach((cardData) => {
+    data.data.forEach((cardData) => {
       const imageUrl = cardData.image_uris?.normal || cardData.card_faces?.[0]?.image_uris?.normal || '';
 
       // Check if the user has already voted on this card
@@ -139,7 +133,7 @@ async function vote(cardName, powerLevel, event) {
 
   try {
     // Send vote to backend with fingerprint
-    const response = await fetch(
+    await fetch(
       "https://script.google.com/macros/s/AKfycby9GxLAK01t0eMQaA6MdCXRKmtFf2zX5gn-Ayx3mvavNft5C_5VzQfar4kT1eW58TOo/exec",
       {
         method: "POST",
@@ -158,7 +152,6 @@ async function vote(cardName, powerLevel, event) {
     cardElement.appendChild(confirmation);
 
     // Hide the card after voting
-    console.log("Hiding card:", cardName);
     cardElement.style.display = "none";
   } catch (error) {
     console.error("Error saving vote:", error);
