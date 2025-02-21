@@ -18,8 +18,11 @@ FingerprintJS.load()
 async function fetchVotedCards(fingerprint) {
   try {
     const response = await fetch(
-      `https://script.google.com/macros/s/AKfycby9GxLAK01t0eMQaA6MdCXRKmtFf2zX5gn-Ayx3mvavNft5C_5VzQfar4kT1eW58TOo/exec?action=getVotedCards&fingerprint=${fingerprint}`,
-      { mode: 'no-cors' } // Use no-cors mode
+      "https://script.google.com/macros/s/AKfycby9GxLAK01t0eMQaA6MdCXRKmtFf2zX5gn-Ayx3mvavNft5C_5VzQfar4kT1eW58TOo/exec?action=getVotedCards&fingerprint=" + fingerprint,
+      {
+        method: "GET",
+        mode: 'no-cors',
+      }
     );
 
     if (!response.ok) throw new Error(`API request failed with status ${response.status}`);
@@ -58,7 +61,14 @@ async function loadCards() {
     if (!response.ok) throw new Error(`API request failed with status ${response.status}`);
 
     const data = await response.json();
-    console.log("API Response:", data);
+    console.log("API Response:", {
+      totalCards: data.total_cards, // Total number of cards matching the query
+      cardsFetched: data.data.length, // Number of cards fetched in this request
+      cards: data.data, // The actual cards returned
+    });
+    if (!data.data || data.data.length === 0) throw new Error("No cards found.");
+
+    const cards = data.data;
 
     // Retrieve the fingerprint from localStorage
     const fingerprint = localStorage.getItem('fingerprint');
@@ -72,7 +82,7 @@ async function loadCards() {
     const cardContainer = document.getElementById("cardContainer");
     cardContainer.innerHTML = ""; // Clear previous cards
 
-    data.data.forEach((cardData) => {
+    cards.forEach((cardData) => {
       const imageUrl = cardData.image_uris?.normal || cardData.card_faces?.[0]?.image_uris?.normal || '';
 
       // Check if the user has already voted on this card
@@ -129,7 +139,7 @@ async function vote(cardName, powerLevel, event) {
 
   try {
     // Send vote to backend with fingerprint
-    await fetch(
+    const response = await fetch(
       "https://script.google.com/macros/s/AKfycby9GxLAK01t0eMQaA6MdCXRKmtFf2zX5gn-Ayx3mvavNft5C_5VzQfar4kT1eW58TOo/exec",
       {
         method: "POST",
@@ -148,6 +158,7 @@ async function vote(cardName, powerLevel, event) {
     cardElement.appendChild(confirmation);
 
     // Hide the card after voting
+    console.log("Hiding card:", cardName);
     cardElement.style.display = "none";
   } catch (error) {
     console.error("Error saving vote:", error);
