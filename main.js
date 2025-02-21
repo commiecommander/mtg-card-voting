@@ -15,29 +15,22 @@ FingerprintJS.load()
   });
 
 // Fetch the list of cards the user has already voted on
-function fetchVotedCards(fingerprint) {
-  return new Promise((resolve, reject) => {
-    const callbackName = `jsonpCallback_${Date.now()}`;
-    const script = document.createElement("script");
+async function fetchVotedCards(fingerprint) {
+  try {
+    const response = await fetch(
+      `https://script.google.com/macros/s/AKfycby9GxLAK01t0eMQaA6MdCXRKmtFf2zX5gn-Ayx3mvavNft5C_5VzQfar4kT1eW58TOo/exec?action=getVotedCards&fingerprint=${fingerprint}`,
+      { mode: 'no-cors' } // Use no-cors mode
+    );
 
-    window[callbackName] = (data) => {
-      delete window[callbackName];
-      document.body.removeChild(script);
-      console.log("Received voted cards:", data);
-      resolve(data.votedCards || []);
-    };
+    if (!response.ok) throw new Error(`API request failed with status ${response.status}`);
 
-    script.src = `https://script.google.com/macros/s/AKfycby9GxLAK01t0eMQaA6MdCXRKmtFf2zX5gn-Ayx3mvavNft5C_5VzQfar4kT1eW58TOo/exec?action=getVotedCards&fingerprint=${fingerprint}&callback=${callbackName}`;
-    console.log("Fetching voted cards from:", script.src);
-    document.body.appendChild(script);
-
-    script.onerror = () => {
-      delete window[callbackName];
-      document.body.removeChild(script);
-      console.error("Failed to fetch voted cards.");
-      reject(new Error("Failed to fetch voted cards."));
-    };
-  });
+    const data = await response.json();
+    console.log("Fetched voted cards:", data.votedCards);
+    return data.votedCards || [];
+  } catch (error) {
+    console.error("Error fetching voted cards:", error);
+    return [];
+  }
 }
 
 async function loadCards() {
