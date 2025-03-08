@@ -85,6 +85,9 @@
         }
         .card {
             perspective: 1000px; /* Adds depth for the flip effect */
+            width: 200px; /* Fixed width for all cards */
+            height: 280px; /* Fixed height for all cards */
+            margin: 10px; /* Spacing between cards */
         }
         .card-inner {
             position: relative;
@@ -107,6 +110,7 @@
             border-radius: 8px;
             background-color: #fff;
             padding: 15px;
+            box-sizing: border-box; /* Ensures padding is included in the width/height */
         }
         .card-back {
             transform: rotateY(180deg); /* Initially hides the back face */
