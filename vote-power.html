@@ -5,101 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vote on Power - The Commander Collective</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            color: #333;
-            margin: 0;
-            padding: 0;
-        }
-        header {
-            background-color: #333;
-            color: #fff;
-            padding: 20px;
-            text-align: center;
-        }
-        nav {
-            background-color: #444;
-            padding: 10px;
-            text-align: center;
-        }
-        nav ul {
-            list-style-type: none;
-            margin: 0;
-            padding: 0;
-        }
-        nav ul li {
-            display: inline;
-            margin: 0 15px;
-        }
-        nav ul li a {
-            color: #fff;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        nav ul li a:hover {
-            text-decoration: underline;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            text-align: center;
-        }
-        .power-levels {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        .power-level {
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 15px;
-            background-color: #f9f9f9;
-            text-align: center;
-        }
-        .power-level h3 {
-            margin: 0 0 10px;
-            font-size: 1.2em;
-            color: #333;
-        }
-        .power-level p {
-            margin: 0;
-            font-size: 0.9em;
-            color: #555;
-        }
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
-        }
-        .card {
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 10px;
-            text-align: center;
-            background-color: #f9f9f9;
-            position: relative; /* For positioning card text */
-        }
-        .card img {
-            max-width: 100%;
-            border-radius: 8px;
-        }
-        .card h3 {
-            margin: 10px 0;
-            font-size: 1.2em;
-        }
-        .card p {
-            margin: 5px 0;
-            font-size: 0.9em;
-            color: #555;
-        }
+        /* Add your existing CSS here */
         .card-text {
             position: absolute;
             width: 1px;
@@ -110,69 +16,10 @@
             clip: rect(0, 0, 0, 0);
             border: 0;
         }
-        footer {
-            background-color: #333;
-            color: #fff;
-            text-align: center;
-            padding: 10px;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-        }
     </style>
 </head>
 <body>
-    <header>
-        <h1>Vote on Power</h1>
-    </header>
-
-    <nav>
-        <ul>
-            <li><a href="index.html">Home</a></li>
-            <li><a href="register.html">Register to Vote</a></li>
-            <li><a href="login.html">Login</a></li>
-            <li><a href="vote-power.html">Vote on Power</a></li>
-            <li><a href="vote-gamechangers.html">Vote on Game Changers</a></li>
-            <li><a href="analyze-deck.html">Analyze my Deck</a></li>
-            <li><a href="about.html">About This Page</a></li>
-        </ul>
-    </nav>
-
-    <div class="container">
-        <h2>How It Works</h2>
-        <p>
-            Vote on the power level of Commander cards based on your experience. Your input helps the community understand which cards are truly impactful in the format. There is no wrong vote that you can cast here. This is how you have experienced any given card in your time playing Commander.
-        </p>
-
-        <!-- Power Level Boxes -->
-        <div class="power-levels">
-            <div class="power-level">
-                <h3>Power Level 1</h3>
-                <p>Would expect this card in Core or it has become so ubiquitous that it could appear in most games.</p>
-            </div>
-            <div class="power-level">
-                <h3>Power Level 2</h3>
-                <p>Would expect this card in an Upgraded deck but can accept seeing it in a Core deck.</p>
-            </div>
-            <div class="power-level">
-                <h3>Power Level 3</h3>
-                <p>Expecting this card in any Optimized deck and avoiding it in Upgraded if a lesser power option exists should be the norm.</p>
-            </div>
-            <div class="power-level">
-                <h3>Power Level 4</h3>
-                <p>This card has no business outside of arranged High Powered Games or cEDH.</p>
-            </div>
-        </div>
-
-        <!-- Cards Grid -->
-        <div class="cards-grid" id="cards-grid">
-            <!-- Cards will be dynamically inserted here -->
-        </div>
-    </div>
-
-    <footer>
-        <p>Disclaimer: The images used on this site are pulled from Scryfall and are the property of Wizards of the Coast. All rights reserved to their respective owners.</p>
-    </footer>
+    <!-- Add your existing HTML here -->
 
     <script>
         // Fetch cards from Scryfall API
@@ -214,22 +61,41 @@
 
                 // Card Mana Cost
                 const cardManaCost = document.createElement('p');
-                cardManaCost.textContent = `Mana Cost: ${card.mana_cost}`;
+                cardManaCost.textContent = `Mana Cost: ${card.mana_cost || 'N/A'}`;
                 cardElement.appendChild(cardManaCost);
 
                 // Full Card Text (for screen readers)
                 const cardText = document.createElement('div');
                 cardText.className = 'card-text';
                 cardText.setAttribute('aria-hidden', 'true'); // Hide visually but keep accessible
-                cardText.innerHTML = `
-                    <p><strong>Name:</strong> ${card.name}</p>
-                    <p><strong>Type:</strong> ${card.type_line}</p>
-                    <p><strong>Mana Cost:</strong> ${card.mana_cost}</p>
-                    <p><strong>Rules Text:</strong> ${card.oracle_text || 'N/A'}</p>
-                    <p><strong>Flavor Text:</strong> ${card.flavor_text || 'N/A'}</p>
-                    <p><strong>Power/Toughness:</strong> ${card.power ? `${card.power}/${card.toughness}` : 'N/A'}</p>
-                    <p><strong>Loyalty:</strong> ${card.loyalty || 'N/A'}</p>
-                `;
+
+                // Handle multiface cards (e.g., split cards, transform cards)
+                if (card.card_faces) {
+                    card.card_faces.forEach((face, index) => {
+                        cardText.innerHTML += `
+                            <p><strong>Face ${index + 1}:</strong></p>
+                            <p><strong>Name:</strong> ${face.name}</p>
+                            <p><strong>Type:</strong> ${face.type_line}</p>
+                            <p><strong>Mana Cost:</strong> ${face.mana_cost || 'N/A'}</p>
+                            <p><strong>Rules Text:</strong> ${face.oracle_text || 'N/A'}</p>
+                            <p><strong>Flavor Text:</strong> ${face.flavor_text || 'N/A'}</p>
+                            <p><strong>Power/Toughness:</strong> ${face.power ? `${face.power}/${face.toughness}` : 'N/A'}</p>
+                            <p><strong>Loyalty:</strong> ${face.loyalty || 'N/A'}</p>
+                        `;
+                    });
+                } else {
+                    // Single-face cards
+                    cardText.innerHTML = `
+                        <p><strong>Name:</strong> ${card.name}</p>
+                        <p><strong>Type:</strong> ${card.type_line}</p>
+                        <p><strong>Mana Cost:</strong> ${card.mana_cost || 'N/A'}</p>
+                        <p><strong>Rules Text:</strong> ${card.oracle_text || 'N/A'}</p>
+                        <p><strong>Flavor Text:</strong> ${card.flavor_text || 'N/A'}</p>
+                        <p><strong>Power/Toughness:</strong> ${card.power ? `${card.power}/${card.toughness}` : 'N/A'}</p>
+                        <p><strong>Loyalty:</strong> ${card.loyalty || 'N/A'}</p>
+                    `;
+                }
+
                 cardElement.appendChild(cardText);
 
                 cardsGrid.appendChild(cardElement);
