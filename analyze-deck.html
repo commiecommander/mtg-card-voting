@@ -112,24 +112,49 @@
 
         function displayCard(card) {
             const cardsGrid = document.getElementById('cards-grid');
-            const imageUrl = card.image_uris?.normal || 'https://via.placeholder.com/200x280'; // Fallback image
+            let cardHtml = '';
 
-            // Generate HTML for the card
-            cardsGrid.innerHTML += `
-                <div class="card">
-                    <div class="card-details">
-                        <img src="${imageUrl}" alt="Card Image of ${card.name}" />
-                        <p><strong>Card Name:</strong> ${card.name}</p>
-                        <p><strong>Mana Cost:</strong> ${card.mana_cost || 'N/A'}</p>
-                        <p><strong>Card Type:</strong> ${card.type_line}</p>
-                        <p><strong>Text:</strong> ${card.oracle_text || 'No text available.'}</p>
-                        <p><strong>Power/Toughness:</strong> ${card.power ? `${card.power}/${card.toughness}` : 'N/A'}</p>
-                        <div class="vote-section">
-                            ${getVoteButtons(card.name)}
+            if (card.layout === 'transform' || card.layout === 'modal_dfc' || card.layout === 'reversible_card') {
+                // Handle double-faced, modal double-faced, and reversible cards
+                card.card_faces.forEach((face, index) => {
+                    const imageUrl = face.image_uris?.normal || 'https://via.placeholder.com/200x280'; // Fallback image
+                    cardHtml += `
+                        <div class="card">
+                            <div class="card-details">
+                                <img src="${imageUrl}" alt="Card Image of ${face.name}" />
+                                <p><strong>Card Name:</strong> ${face.name}</p>
+                                <p><strong>Mana Cost:</strong> ${face.mana_cost || 'N/A'}</p>
+                                <p><strong>Card Type:</strong> ${face.type_line}</p>
+                                <p><strong>Text:</strong> ${face.oracle_text || 'No text available.'}</p>
+                                <p><strong>Power/Toughness:</strong> ${face.power ? `${face.power}/${face.toughness}` : 'N/A'}</p>
+                                <div class="vote-section">
+                                    ${getVoteButtons(face.name)}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                // Handle normal cards
+                const imageUrl = card.image_uris?.normal || 'https://via.placeholder.com/200x280'; // Fallback image
+                cardHtml += `
+                    <div class="card">
+                        <div class="card-details">
+                            <img src="${imageUrl}" alt="Card Image of ${card.name}" />
+                            <p><strong>Card Name:</strong> ${card.name}</p>
+                            <p><strong>Mana Cost:</strong> ${card.mana_cost || 'N/A'}</p>
+                            <p><strong>Card Type:</strong> ${card.type_line}</p>
+                            <p><strong>Text:</strong> ${card.oracle_text || 'No text available.'}</p>
+                            <p><strong>Power/Toughness:</strong> ${card.power ? `${card.power}/${card.toughness}` : 'N/A'}</p>
+                            <div class="vote-section">
+                                ${getVoteButtons(card.name)}
+                            </div>
                         </div>
                     </div>
-                </div>
-            `;
+                `;
+            }
+
+            cardsGrid.innerHTML += cardHtml;
         }
 
         function getVoteButtons(cardName) {
