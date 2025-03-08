@@ -84,16 +84,32 @@
             padding: 20px 0;
         }
         .card {
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 15px;
-            background-color: #fff;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            perspective: 1000px; /* Adds depth for the flip effect */
         }
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d; /* Ensures the back face is visible during the flip */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        .card.flipped .card-inner {
+            transform: rotateY(180deg); /* Flips the card */
+        }
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden; /* Hides the back face when not flipped */
+            border-radius: 8px;
+            background-color: #fff;
+            padding: 15px;
+        }
+        .card-back {
+            transform: rotateY(180deg); /* Initially hides the back face */
         }
         .card-details img {
             max-width: 100%;
@@ -308,24 +324,34 @@
 
             if (card.layout === 'transform' || card.layout === 'modal_dfc' || card.layout === 'reversible_card') {
                 // Handle double-faced, modal double-faced, and reversible cards
-                card.card_faces.forEach((face, index) => {
-                    const imageUrl = face.image_uris?.normal || 'https://via.placeholder.com/200x280'; // Fallback image
-                    cardHtml += `
-                        <div class="card">
-                            <div class="card-details">
-                                <img src="${imageUrl}" alt="Card Image of ${face.name}" />
-                                <p><strong>Card Name:</strong> ${face.name}</p>
-                                <p><strong>Mana Cost:</strong> ${face.mana_cost || 'N/A'}</p>
-                                <p><strong>Card Type:</strong> ${face.type_line}</p>
-                                <p><strong>Text:</strong> ${face.oracle_text || 'No text available.'}</p>
-                                <p><strong>Power/Toughness:</strong> ${face.power ? `${face.power}/${face.toughness}` : 'N/A'}</p>
+                cardHtml += `
+                    <div class="card" onclick="flipCard(this)">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <img src="${card.card_faces[0].image_uris?.normal || 'https://via.placeholder.com/200x280'}" alt="Card Image of ${card.card_faces[0].name}" />
+                                <p><strong>Card Name:</strong> ${card.card_faces[0].name}</p>
+                                <p><strong>Mana Cost:</strong> ${card.card_faces[0].mana_cost || 'N/A'}</p>
+                                <p><strong>Card Type:</strong> ${card.card_faces[0].type_line}</p>
+                                <p><strong>Text:</strong> ${card.card_faces[0].oracle_text || 'No text available.'}</p>
+                                <p><strong>Power/Toughness:</strong> ${card.card_faces[0].power ? `${card.card_faces[0].power}/${card.card_faces[0].toughness}` : 'N/A'}</p>
                                 <div class="vote-section">
-                                    ${getVoteButtons(face.name)}
+                                    ${getVoteButtons(card.card_faces[0].name)}
+                                </div>
+                            </div>
+                            <div class="card-back">
+                                <img src="${card.card_faces[1].image_uris?.normal || 'https://via.placeholder.com/200x280'}" alt="Card Image of ${card.card_faces[1].name}" />
+                                <p><strong>Card Name:</strong> ${card.card_faces[1].name}</p>
+                                <p><strong>Mana Cost:</strong> ${card.card_faces[1].mana_cost || 'N/A'}</p>
+                                <p><strong>Card Type:</strong> ${card.card_faces[1].type_line}</p>
+                                <p><strong>Text:</strong> ${card.card_faces[1].oracle_text || 'No text available.'}</p>
+                                <p><strong>Power/Toughness:</strong> ${card.card_faces[1].power ? `${card.card_faces[1].power}/${card.card_faces[1].toughness}` : 'N/A'}</p>
+                                <div class="vote-section">
+                                    ${getVoteButtons(card.card_faces[1].name)}
                                 </div>
                             </div>
                         </div>
-                    `;
-                });
+                    </div>
+                `;
             } else {
                 // Handle normal cards
                 const imageUrl = card.image_uris?.normal || 'https://via.placeholder.com/200x280'; // Fallback image
@@ -347,6 +373,10 @@
             }
 
             cardsGrid.innerHTML += cardHtml;
+        }
+
+        function flipCard(card) {
+            card.classList.toggle('flipped');
         }
 
         function getVoteButtons(cardName) {
