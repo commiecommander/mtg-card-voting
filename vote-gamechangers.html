@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vote on Game Changers - The Commander Collective</title>
+    <title>Game Changers - The Commander Collective</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -41,7 +41,7 @@
             text-decoration: underline;
         }
         .container {
-            max-width: 800px;
+            max-width: 1200px;
             margin: 20px auto;
             padding: 20px;
             background-color: #fff;
@@ -51,8 +51,21 @@
         h1 {
             text-align: center;
         }
-        p {
-            line-height: 1.6;
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            background-color: #fff;
+            margin-bottom: 20px;
+        }
+        .card-details img {
+            max-width: 100%;
+            border-radius: 8px;
         }
         footer {
             background-color: #333;
@@ -67,7 +80,7 @@
 </head>
 <body>
     <header>
-        <h1>Vote on Game Changers</h1>
+        <h1>Game Changers</h1>
     </header>
 
     <nav>
@@ -83,15 +96,69 @@
     </nav>
 
     <div class="container">
-        <h2>How It Works</h2>
+        <h2>Game Changers</h2>
         <p>
-            Vote on the cards that you believe are true game changers in Commander. Your input helps the community identify which cards have the most significant impact on the game.
+            Explore the most impactful Commander cards as determined by the community.
         </p>
-        <!-- Add voting functionality here -->
+
+        <!-- Cards Grid -->
+        <div class="cards-grid" id="cards-grid">
+            <!-- Cards will be dynamically inserted here -->
+        </div>
     </div>
 
     <footer>
         <p>Disclaimer: The images used on this site are pulled from Scryfall and are the property of Wizards of the Coast. All rights reserved to their respective owners.</p>
     </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            async function fetchCards() {
+                const apiUrl = 'https://api.scryfall.com/cards/search?q=(game:paper)+legal:commander+is:GC&order=edhrec&dir=asc&unique=cards';
+                console.log('Fetching cards from:', apiUrl); // Debugging
+                try {
+                    const response = await fetch(apiUrl);
+                    console.log('Response received:', response); // Debugging
+                    const data = await response.json();
+                    console.log('Data received:', data); // Debugging
+                    displayCards(data.data);
+                } catch (error) {
+                    console.error('Error fetching cards:', error); // Debugging
+                }
+            }
+
+            function displayCards(cards) {
+                console.log('Displaying cards:', cards); // Debugging
+                const cardsGrid = document.getElementById('cards-grid');
+                if (!cardsGrid) {
+                    console.error('cards-grid element not found!'); // Debugging
+                    return;
+                }
+                cardsGrid.innerHTML = ''; // Clear any existing content
+
+                cards.forEach(card => {
+                    const imageUrl = card.image_uris?.normal || 'https://via.placeholder.com/200x280'; // Fallback image
+
+                    // Generate HTML for the card
+                    cardsGrid.innerHTML += `
+                        <div class="card">
+                            <div class="card-details">
+                                <img src="${imageUrl}" alt="Card Image of ${card.name}" />
+                                <p><strong>Card Name:</strong> ${card.name}</p>
+                                <p><strong>Mana Cost:</strong> ${card.mana_cost || 'N/A'}</p>
+                                <p><strong>Card Type:</strong> ${card.type_line}</p>
+                                <p><strong>Text:</strong> ${card.oracle_text || 'No text available.'}</p>
+                                <p><strong>Power/Toughness:</strong> ${card.power ? `${card.power}/${card.toughness}` : 'N/A'}</p>
+                                <p><strong>EDHREC Rank:</strong> ${card.edhrec_rank || 'N/A'}</p>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            // Fetch cards when the page loads
+            fetchCards();
+        });
+    </script>
 </body>
 </html>
