@@ -1,64 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="MTG Commander Tools - A collection of community-driven tools for voting, deck analysis, and more for Magic: The Gathering Commander (EDH).">
-  <title>MTG Commander Tools</title>
-  <link rel="stylesheet" href="styles.css"> <!-- Link to your CSS file -->
-  <link rel="icon" href="favicon.ico" type="image/x-icon"> <!-- Favicon -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Commander Collective Card Power Ranking</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 20px;
+        }
+        .card {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin: 10px;
+            padding: 20px;
+            width: 200px;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: scale(1.05);
+        }
+        .card a {
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+        }
+        footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <h1>MTG Commander Tools</h1>
-    <p>Welcome to the community-driven tools for Magic: The Gathering Commander (EDH). Explore the tools below to vote on card power levels, analyze decks, and more!</p>
-  </header>
+    <header>
+        <h1>The Commander Collective Card Power Ranking</h1>
+        <p>Welcome to Commie Commander's Community Page for ranking and voting. Please register an account so you can begin voting on what is most important to you.</p>
+    </header>
 
-  <main>
-    <!-- Tool Navigation Section -->
-    <section>
-      <h2>Tools</h2>
-      <div class="tool-grid">
-        <!-- Power Level Voting Tool -->
-        <div class="tool-card">
-          <h3>Power Level Voting</h3>
-          <p>Vote on the power level of Commander cards (Exhibition, Core, Upgraded, Optimized, cEDH).</p>
-          <a href="powerlevel.html" class="tool-button">Go to Power Level Voting</a>
+    <div class="container">
+        <div class="card">
+            <a href="register.html">Register to Vote</a>
         </div>
-
-        <!-- Game Changers Voting Tool -->
-        <div class="tool-card">
-          <h3>Game Changers Voting</h3>
-          <p>Vote on whether a card is a "Game Changer" or not in Commander.</p>
-          <a href="gamechangers.html" class="tool-button">Go to Game Changers Voting</a>
+        <div class="card">
+            <a href="vote-power.html">Vote on Power</a>
         </div>
-
-        <!-- Vibe Score Voting Tool -->
-        <div class="tool-card">
-          <h3>Vibe Score Voting</h3>
-          <p>Rate cards on a scale of 0–3 based on how much joy or salt they bring to the table.</p>
-          <a href="thevibescore.html" class="tool-button">Go to Vibe Score Voting</a>
+        <div class="card">
+            <a href="vote-gamechangers.html">Vote on Game Changers</a>
         </div>
-
-        <!-- Deck Check Tool -->
-        <div class="tool-card">
-          <h3>Deck Check</h3>
-          <p>Analyze your deck's power level, Game Changers, and Vibe Score based on community data.</p>
-          <a href="deckcheck.html" class="tool-button">Go to Deck Check</a>
+        <div class="card">
+            <a href="analyze-deck.html">Analyze my Deck</a>
         </div>
-
-        <!-- Polling Questions Tool -->
-        <div class="tool-card">
-          <h3>Polling Questions</h3>
-          <p>Answer quick, one-shot questions about Commander and Magic: The Gathering.</p>
-          <a href="pollingquestions.html" class="tool-button">Go to Polling Questions</a>
+        <div class="card">
+            <a href="about.html">About this Page</a>
         </div>
-      </div>
-    </section>
-  </main>
+    </div>
 
-  <footer>
-    <p>Created by [Your Name] | Community-Driven MTG Commander Tools</p>
-  </footer>
+    <footer>
+        <p>Disclaimer: The images used on this site are pulled from Scryfall and are the property of Wizards of the Coast. All rights reserved to their respective owners.</p>
+    </footer>
 </body>
 </html>
