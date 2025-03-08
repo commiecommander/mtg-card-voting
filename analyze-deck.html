@@ -243,16 +243,22 @@
                 modal.innerHTML = `
                     <p>${message}</p>
                     <div style="display: flex; gap: 10px; margin-top: 20px;">
-                        <button onclick="closeModal(true)" style="padding: 5px 15px; background-color: #4CAF50; color: #fff; border: none; border-radius: 4px; cursor: pointer;">Yes</button>
-                        <button onclick="closeModal(false)" style="padding: 5px 15px; background-color: #F44336; color: #fff; border: none; border-radius: 4px; cursor: pointer;">No</button>
+                        <button id="modal-yes" style="padding: 5px 15px; background-color: #4CAF50; color: #fff; border: none; border-radius: 4px; cursor: pointer;">Yes</button>
+                        <button id="modal-no" style="padding: 5px 15px; background-color: #F44336; color: #fff; border: none; border-radius: 4px; cursor: pointer;">No</button>
                     </div>
                 `;
                 document.body.appendChild(modal);
 
-                function closeModal(result) {
+                // Add event listeners to the buttons
+                document.getElementById('modal-yes').addEventListener('click', () => {
                     document.body.removeChild(modal);
-                    resolve(result);
-                }
+                    resolve(true);
+                });
+
+                document.getElementById('modal-no').addEventListener('click', () => {
+                    document.body.removeChild(modal);
+                    resolve(false);
+                });
             });
         }
 
