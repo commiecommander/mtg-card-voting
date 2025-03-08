@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -42,7 +41,7 @@
             text-decoration: underline;
         }
         .container {
-            max-width: 800px;
+            max-width: 1200px;
             margin: 20px auto;
             padding: 20px;
             background-color: #fff;
@@ -52,8 +51,30 @@
         h1 {
             text-align: center;
         }
-        p {
-            line-height: 1.6;
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            background-color: #f9f9f9;
+        }
+        .card img {
+            max-width: 100%;
+            border-radius: 8px;
+        }
+        .card h3 {
+            margin: 10px 0;
+            font-size: 1.2em;
+        }
+        .card p {
+            margin: 5px 0;
+            font-size: 0.9em;
+            color: #555;
         }
         footer {
             background-color: #333;
@@ -88,11 +109,61 @@
         <p>
             Vote on the power level of Commander cards based on your experience. Your input helps the community understand which cards are truly impactful in the format.
         </p>
-        <!-- Add voting functionality here -->
+        <div class="cards-grid" id="cards-grid">
+            <!-- Cards will be dynamically inserted here -->
+        </div>
     </div>
 
     <footer>
         <p>Disclaimer: The images used on this site are pulled from Scryfall and are the property of Wizards of the Coast. All rights reserved to their respective owners.</p>
     </footer>
+
+    <script>
+        // Fetch cards from Scryfall API
+        async function fetchCards() {
+            const apiUrl = 'https://api.scryfall.com/cards/search?q=game:paper+legal:commander&order=edhrec';
+            try {
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+                displayCards(data.data);
+            } catch (error) {
+                console.error('Error fetching cards:', error);
+            }
+        }
+
+        // Display cards in the grid
+        function displayCards(cards) {
+            const cardsGrid = document.getElementById('cards-grid');
+            cardsGrid.innerHTML = ''; // Clear any existing content
+
+            cards.forEach(card => {
+                const cardElement = document.createElement('div');
+                cardElement.className = 'card';
+
+                const cardImage = document.createElement('img');
+                cardImage.src = card.image_uris?.normal || 'https://via.placeholder.com/200x280'; // Fallback image
+                cardImage.alt = card.name;
+
+                const cardName = document.createElement('h3');
+                cardName.textContent = card.name;
+
+                const cardType = document.createElement('p');
+                cardType.textContent = card.type_line;
+
+                const cardManaCost = document.createElement('p');
+                cardManaCost.textContent = `Mana Cost: ${card.mana_cost}`;
+
+                cardElement.appendChild(cardImage);
+                cardElement.appendChild(cardName);
+                cardElement.appendChild(cardType);
+                cardElement.appendChild(cardManaCost);
+
+                cardsGrid.appendChild(cardElement);
+            });
+        }
+
+        // Fetch cards when the page loads
+        fetchCards();
+    </script>
 </body>
 </html>
