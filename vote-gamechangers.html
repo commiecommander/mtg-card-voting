@@ -104,6 +104,37 @@
             max-width: 100%;
             border-radius: 8px;
         }
+        .vote-section {
+            margin-top: 15px;
+            text-align: center;
+        }
+        .vote-section p {
+            margin: 0 0 10px;
+            font-size: 0.9em;
+            color: #555;
+        }
+        .vote-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        .vote-buttons button {
+            padding: 5px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #fff;
+        }
+        .vote-buttons button.yes {
+            background-color: #4CAF50; /* Green */
+        }
+        .vote-buttons button.no {
+            background-color: #F44336; /* Red */
+        }
+        .vote-buttons button:hover {
+            opacity: 0.8;
+        }
         footer {
             background-color: #333;
             color: #fff;
@@ -239,10 +270,24 @@
                             <p><strong>Text:</strong> ${card.oracle_text || 'No text available.'}</p>
                             <p><strong>Power/Toughness:</strong> ${card.power ? `${card.power}/${card.toughness}` : 'N/A'}</p>
                             <p><strong>EDHREC Rank:</strong> ${card.edhrec_rank || 'N/A'}</p>
+                            <div class="vote-section">
+                                <p>Is this a game changer?</p>
+                                <div class="vote-buttons">
+                                    <button class="yes" onclick="vote('${card.name}', 'yes')">Yes</button>
+                                    <button class="no" onclick="vote('${card.name}', 'no')">No</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 `;
             });
+        }
+
+        function vote(cardName, voteType) {
+            console.log(`Voted ${voteType} for ${cardName}`);
+            // Here, you can send the vote to your backend or Firebase
+            // Example:
+            // saveVote(cardName, voteType);
         }
     </script>
 </body>
