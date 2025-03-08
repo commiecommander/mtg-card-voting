@@ -85,6 +85,7 @@
             padding: 10px;
             text-align: center;
             background-color: #f9f9f9;
+            position: relative; /* For positioning card text */
         }
         .card img {
             max-width: 100%;
@@ -98,6 +99,16 @@
             margin: 5px 0;
             font-size: 0.9em;
             color: #555;
+        }
+        .card-text {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
         }
         footer {
             background-color: #333;
@@ -185,23 +196,41 @@
                 const cardElement = document.createElement('div');
                 cardElement.className = 'card';
 
+                // Card Image
                 const cardImage = document.createElement('img');
                 cardImage.src = card.image_uris?.normal || 'https://via.placeholder.com/200x280'; // Fallback image
-                cardImage.alt = card.name;
+                cardImage.alt = card.name; // Alt text for screen readers
+                cardElement.appendChild(cardImage);
 
+                // Card Name
                 const cardName = document.createElement('h3');
                 cardName.textContent = card.name;
+                cardElement.appendChild(cardName);
 
+                // Card Type
                 const cardType = document.createElement('p');
                 cardType.textContent = card.type_line;
+                cardElement.appendChild(cardType);
 
+                // Card Mana Cost
                 const cardManaCost = document.createElement('p');
                 cardManaCost.textContent = `Mana Cost: ${card.mana_cost}`;
-
-                cardElement.appendChild(cardImage);
-                cardElement.appendChild(cardName);
-                cardElement.appendChild(cardType);
                 cardElement.appendChild(cardManaCost);
+
+                // Full Card Text (for screen readers)
+                const cardText = document.createElement('div');
+                cardText.className = 'card-text';
+                cardText.setAttribute('aria-hidden', 'true'); // Hide visually but keep accessible
+                cardText.innerHTML = `
+                    <p><strong>Name:</strong> ${card.name}</p>
+                    <p><strong>Type:</strong> ${card.type_line}</p>
+                    <p><strong>Mana Cost:</strong> ${card.mana_cost}</p>
+                    <p><strong>Rules Text:</strong> ${card.oracle_text || 'N/A'}</p>
+                    <p><strong>Flavor Text:</strong> ${card.flavor_text || 'N/A'}</p>
+                    <p><strong>Power/Toughness:</strong> ${card.power ? `${card.power}/${card.toughness}` : 'N/A'}</p>
+                    <p><strong>Loyalty:</strong> ${card.loyalty || 'N/A'}</p>
+                `;
+                cardElement.appendChild(cardText);
 
                 cardsGrid.appendChild(cardElement);
             });
