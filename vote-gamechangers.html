@@ -48,8 +48,27 @@
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-        h1 {
+        h1, h2 {
             text-align: center;
+        }
+        .intro {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-left: 5px solid #333;
+            border-radius: 8px;
+        }
+        .intro p {
+            margin: 0 0 15px;
+            line-height: 1.6;
+        }
+        .intro a {
+            color: #333;
+            text-decoration: underline;
+            font-weight: bold;
+        }
+        .intro a:hover {
+            color: #555;
         }
         .cards-grid {
             display: grid;
@@ -96,10 +115,21 @@
     </nav>
 
     <div class="container">
-<h2>Game Changers</h2>
-<p>
-    Listed below are what Wizards of the Coast and the Commander Format Panel have decreed to be considered cards that are game changers. You can learn more about game changers <a href="https://magic.wizards.com/en/news/announcements/introducing-commander-brackets-beta" target="_blank">here</a>. However, what this page seeks to do—through the power of the <a href="https://tagger.scryfall.com/" target="_blank">Scryfall Tagger Initiative</a>—is to allow you to click on each Game Changer and view a page of cards that contain one or more related tags that the root Game Changer also has. The reason for this is to give you, the community member, the player, the person who sees these (or cards like it) in play every day, week, month, or year, a way to vote on whether it's the card itself that makes it game-changing or the effect that does it.
-</p>
+        <div class="intro">
+            <h2>What Are Game Changers?</h2>
+            <p>
+                Listed below are what Wizards of the Coast and the Commander Format Panel have decreed to be considered cards that are game changers. These cards have a significant impact on gameplay and are often pivotal in shaping the outcome of a match.
+            </p>
+            <p>
+                You can learn more about game changers <a href="https://magic.wizards.com/en/news/announcements/introducing-commander-brackets-beta" target="_blank">here</a>.
+            </p>
+            <p>
+                However, this page goes a step further. Through the power of the <a href="https://tagger.scryfall.com/" target="_blank">Scryfall Tagger Initiative</a>, you can click on each Game Changer to view a page of cards that share one or more related tags. This allows you to explore whether it's the card itself or its effect that makes it truly game-changing.
+            </p>
+            <p>
+                As a community member, player, or someone who encounters these cards regularly, this tool empowers you to weigh in on what makes a card impactful. Is it the card, or is it the effect? The choice is yours.
+            </p>
+        </div>
 
         <!-- Cards Grid -->
         <div class="cards-grid" id="cards-grid">
