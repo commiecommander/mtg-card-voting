@@ -5,105 +5,66 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vote on Power - The Commander Collective</title>
     <style>
-        /* Add your existing CSS here */
-        .card-text {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            border: 0;
-        }
+        /* Add your CSS here */
     </style>
 </head>
 <body>
-    <!-- Add your existing HTML here -->
+    <header>
+        <h1>Vote on Power</h1>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="register.html">Register to Vote</a></li>
+            <li><a href="login.html">Login</a></li>
+            <li><a href="vote-power.html">Vote on Power</a></li>
+            <li><a href="vote-gamechangers.html">Vote on Game Changers</a></li>
+            <li><a href="analyze-deck.html">Analyze my Deck</a></li>
+            <li><a href="about.html">About This Page</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <h2>How It Works</h2>
+        <p>
+            Vote on the power level of Commander cards based on your experience. Your input helps the community understand which cards are truly impactful in the format.
+        </p>
+
+        <!-- Power Level Boxes -->
+        <div class="power-levels">
+            <div class="power-level">
+                <h3>Power Level 1</h3>
+                <p>Would expect this card in Core or it has become so ubiquitous that it could appear in most games.</p>
+            </div>
+            <div class="power-level">
+                <h3>Power Level 2</h3>
+                <p>Would expect this card in an Upgraded deck but can accept seeing it in a Core deck.</p>
+            </div>
+            <div class="power-level">
+                <h3>Power Level 3</h3>
+                <p>Expecting this card in any Optimized deck and avoiding it in Upgraded if a lesser power option exists should be the norm.</p>
+            </div>
+            <div class="power-level">
+                <h3>Power Level 4</h3>
+                <p>This card has no business outside of arranged High Powered Games or cEDH.</p>
+            </div>
+        </div>
+
+        <!-- Cards Grid -->
+        <div class="cards-grid" id="cards-grid">
+            <!-- Cards will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <footer>
+        <p>Disclaimer: The images used on this site are pulled from Scryfall and are the property of Wizards of the Coast. All rights reserved to their respective owners.</p>
+    </footer>
 
     <script>
-        // Fetch cards from Scryfall API
-        async function fetchCards() {
-            const apiUrl = 'https://api.scryfall.com/cards/search?q=game:paper+legal:commander&order=edhrec';
-            try {
-                const response = await fetch(apiUrl);
-                const data = await response.json();
-                displayCards(data.data);
-            } catch (error) {
-                console.error('Error fetching cards:', error);
-            }
-        }
-
-        // Display cards in the grid
-        function displayCards(cards) {
-            const cardsGrid = document.getElementById('cards-grid');
-            cardsGrid.innerHTML = ''; // Clear any existing content
-
-            cards.forEach(card => {
-                const cardElement = document.createElement('div');
-                cardElement.className = 'card';
-
-                // Card Image
-                const cardImage = document.createElement('img');
-                cardImage.src = card.image_uris?.normal || 'https://via.placeholder.com/200x280'; // Fallback image
-                cardImage.alt = card.name; // Alt text for screen readers
-                cardElement.appendChild(cardImage);
-
-                // Card Name
-                const cardName = document.createElement('h3');
-                cardName.textContent = card.name;
-                cardElement.appendChild(cardName);
-
-                // Card Type
-                const cardType = document.createElement('p');
-                cardType.textContent = card.type_line;
-                cardElement.appendChild(cardType);
-
-                // Card Mana Cost
-                const cardManaCost = document.createElement('p');
-                cardManaCost.textContent = `Mana Cost: ${card.mana_cost || 'N/A'}`;
-                cardElement.appendChild(cardManaCost);
-
-                // Full Card Text (for screen readers)
-                const cardText = document.createElement('div');
-                cardText.className = 'card-text';
-                cardText.setAttribute('aria-hidden', 'true'); // Hide visually but keep accessible
-
-                // Handle multiface cards (e.g., split cards, transform cards)
-                if (card.card_faces) {
-                    card.card_faces.forEach((face, index) => {
-                        cardText.innerHTML += `
-                            <p><strong>Face ${index + 1}:</strong></p>
-                            <p><strong>Name:</strong> ${face.name}</p>
-                            <p><strong>Type:</strong> ${face.type_line}</p>
-                            <p><strong>Mana Cost:</strong> ${face.mana_cost || 'N/A'}</p>
-                            <p><strong>Rules Text:</strong> ${face.oracle_text || 'N/A'}</p>
-                            <p><strong>Flavor Text:</strong> ${face.flavor_text || 'N/A'}</p>
-                            <p><strong>Power/Toughness:</strong> ${face.power ? `${face.power}/${face.toughness}` : 'N/A'}</p>
-                            <p><strong>Loyalty:</strong> ${face.loyalty || 'N/A'}</p>
-                        `;
-                    });
-                } else {
-                    // Single-face cards
-                    cardText.innerHTML = `
-                        <p><strong>Name:</strong> ${card.name}</p>
-                        <p><strong>Type:</strong> ${card.type_line}</p>
-                        <p><strong>Mana Cost:</strong> ${card.mana_cost || 'N/A'}</p>
-                        <p><strong>Rules Text:</strong> ${card.oracle_text || 'N/A'}</p>
-                        <p><strong>Flavor Text:</strong> ${card.flavor_text || 'N/A'}</p>
-                        <p><strong>Power/Toughness:</strong> ${card.power ? `${card.power}/${card.toughness}` : 'N/A'}</p>
-                        <p><strong>Loyalty:</strong> ${card.loyalty || 'N/A'}</p>
-                    `;
-                }
-
-                cardElement.appendChild(cardText);
-
-                cardsGrid.appendChild(cardElement);
-            });
-        }
-
-        // Fetch cards when the page loads
-        fetchCards();
+        document.addEventListener('DOMContentLoaded', () => {
+            // Add the JavaScript code here
+        });
     </script>
 </body>
 </html>
