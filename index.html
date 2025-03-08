@@ -18,6 +18,28 @@
             padding: 20px;
             text-align: center;
         }
+        nav {
+            background-color: #444;
+            padding: 10px;
+            text-align: center;
+        }
+        nav ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+        }
+        nav ul li {
+            display: inline;
+            margin: 0 15px;
+        }
+        nav ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        nav ul li a:hover {
+            text-decoration: underline;
+        }
         .container {
             display: flex;
             flex-wrap: wrap;
@@ -60,9 +82,24 @@
         <p>Welcome to Commie Commander's Community Page for ranking and voting. Please register an account so you can begin voting on what is most important to you.</p>
     </header>
 
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="register.html">Register to Vote</a></li>
+            <li><a href="login.html">Login</a></li>
+            <li><a href="vote-power.html">Vote on Power</a></li>
+            <li><a href="vote-gamechangers.html">Vote on Game Changers</a></li>
+            <li><a href="analyze-deck.html">Analyze my Deck</a></li>
+            <li><a href="about.html">About This Page</a></li>
+        </ul>
+    </nav>
+
     <div class="container">
         <div class="card">
             <a href="register.html">Register to Vote</a>
+        </div>
+        <div class="card">
+            <a href="login.html">Login</a>
         </div>
         <div class="card">
             <a href="vote-power.html">Vote on Power</a>
@@ -74,7 +111,7 @@
             <a href="analyze-deck.html">Analyze my Deck</a>
         </div>
         <div class="card">
-            <a href="about.html">About this Page</a>
+            <a href="about.html">About This Page</a>
         </div>
     </div>
 
