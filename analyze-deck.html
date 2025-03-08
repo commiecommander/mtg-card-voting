@@ -344,4 +344,43 @@
         }
 
         function getVoteButtons(cardName) {
-            if (votingMode ===
+            if (votingMode === 'game-changers') {
+                return `
+                    <p>Is this a game changer?</p>
+                    <div class="vote-buttons">
+                        <button class="yes" onclick="vote('${cardName}', 'yes')">Yes</button>
+                        <button class="no" onclick="vote('${cardName}', 'no')">No</button>
+                    </div>
+                `;
+            } else if (votingMode === 'power-level') {
+                return `
+                    <p>What is the power level of this card?</p>
+                    <div class="vote-buttons">
+                        <button class="low" onclick="vote('${cardName}', 'low')">Low</button>
+                        <button class="medium" onclick="vote('${cardName}', 'medium')">Medium</button>
+                        <button class="high" onclick="vote('${cardName}', 'high')">High</button>
+                        <button class="cedh" onclick="vote('${cardName}', 'cedh')">cEDH</button>
+                    </div>
+                `;
+            } else {
+                return ''; // No voting buttons if the user chose not to vote
+            }
+        }
+
+        function vote(cardName, voteType) {
+            console.log(`Voted ${voteType} for ${cardName}`);
+            // Here, you can send the vote to your backend or Firebase
+            // Example:
+            // saveVote(cardName, voteType);
+        }
+
+        function revealPowerLevel() {
+            alert("Power Level: [Placeholder]"); // Placeholder for power level calculation
+        }
+
+        function revealGameChangers() {
+            alert("Game Changers: [Placeholder]"); // Placeholder for game changers calculation
+        }
+    </script>
+</body>
+</html>
