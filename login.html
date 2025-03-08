@@ -85,4 +85,30 @@
             projectId: "commander-collective-3fdae",
             storageBucket: "commander-collective-3fdae.firebasestorage.app",
             messagingSenderId: "449116378578",
-            appId: "1:449116378578:web:762571
+            appId: "1:449116378578:web:762571cc80956cccbda40b",
+            measurementId: "G-D61FGMS81X"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Handle login
+        const loginForm = document.getElementById('login-form');
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            signInWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    alert('Login successful!');
+                    window.location.href = 'index.html'; // Redirect to index.html
+                })
+                .catch((error) => {
+                    alert('Error: ' + error.message);
+                });
+        });
+    </script>
+</body>
+</html>
