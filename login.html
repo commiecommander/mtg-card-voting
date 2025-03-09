@@ -1,170 +1,52 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - The Commander Collective</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            color: #333;
-            margin: 0;
-            padding: 0;
-        }
-        header {
-            background-color: #333;
-            color: #fff;
-            padding: 20px;
-            text-align: center;
-        }
-        nav {
-            background-color: #444;
-            padding: 10px;
-            text-align: center;
-        }
-        nav ul {
-            list-style-type: none;
-            margin: 0;
-            padding: 0;
-        }
-        nav ul li {
-            display: inline;
-            margin: 0 15px;
-        }
-        nav ul li a {
-            color: #fff;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        nav ul li a:hover {
-            text-decoration: underline;
-        }
-        .container {
-            max-width: 400px;
-            margin: 50px auto;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            text-align: center;
-        }
-        label {
-            display: block;
-            margin-bottom: 8px;
-        }
-        input {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 20px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        button {
-            width: 100%;
-            padding: 10px;
-            background-color: #333;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #555;
-        }
-        p {
-            text-align: center;
-        }
-        a {
-            color: #333;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-        footer {
-            background-color: #333;
-            color: #fff;
-            text-align: center;
-            padding: 10px;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <h1>Login</h1>
-    </header>
+<script type="module">
+    // Import Firebase modules
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-auth.js";
+    import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-firestore.js";
 
-    <nav>
-        <ul>
-            <li><a href="index.html">Home</a></li>
-            <li><a href="register.html">Register to Vote</a></li>
-            <li><a href="login.html">Login</a></li>
-            <li><a href="vote-power.html">Vote on Power</a></li>
-            <li><a href="vote-gamechangers.html">Vote on Game Changers</a></li>
-            <li><a href="analyze-deck.html">Analyze my Deck</a></li>
-            <li><a href="about.html">About This Page</a></li>
-        </ul>
-    </nav>
+    // Your Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyAGuMe2uHwiIRAB6XFdiKdzrAzPGE_42yY",
+        authDomain: "commander-collective-3fdae.firebaseapp.com",
+        projectId: "commander-collective-3fdae",
+        storageBucket: "commander-collective-3fdae.firebasestorage.app",
+        messagingSenderId: "449116378578",
+        appId: "1:449116378578:web:762571cc80956cccbda40b",
+        measurementId: "G-D61FGMS81X"
+    };
 
-    <div class="container">
-        <form id="login-form">
-            <label for="email">Email:</label>
-            <input type="email" id="email" required>
-            <label for="password">Password:</label>
-            <input type="password" id="password" required>
-            <button type="submit">Login</button>
-        </form>
-        <p>Don't have an account? <a href="register.html">Register here</a>.</p>
-    </div>
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-    <!-- Add Firebase SDK -->
-    <script type="module">
-        // Import Firebase modules
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-auth.js";
+    // Handle login
+    const loginForm = document.getElementById('login-form');
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
 
-        // Your Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyAGuMe2uHwiIRAB6XFdiKdzrAzPGE_42yY",
-            authDomain: "commander-collective-3fdae.firebaseapp.com",
-            projectId: "commander-collective-3fdae",
-            storageBucket: "commander-collective-3fdae.firebasestorage.app",
-            messagingSenderId: "449116378578",
-            appId: "1:449116378578:web:762571cc80956cccbda40b",
-            measurementId: "G-D61FGMS81X"
-        };
+        try {
+            // Look up the user's email in Firestore using their username
+            const usernameQuery = query(collection(db, "users"), where("username", "==", username));
+            const usernameSnapshot = await getDocs(usernameQuery);
 
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
+            if (usernameSnapshot.empty) {
+                alert('Username not found. Please check your username or register.');
+                return;
+            }
 
-        // Handle login
-        const loginForm = document.getElementById('login-form');
-        loginForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+            // Get the user's email from Firestore
+            const userDoc = usernameSnapshot.docs[0];
+            const email = userDoc.data().email;
 
-            signInWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
-                    alert('Login successful!');
-                    window.location.href = 'index.html'; // Redirect to index.html
-                })
-                .catch((error) => {
-                    alert('Error: ' + error.message);
-                });
-        });
-    </script>
-
-    <footer>
-        <p>Disclaimer: The images used on this site are pulled from Scryfall and are the property of Wizards of the Coast. All rights reserved to their respective owners.</p>
-    </footer>
-</body>
-</html>
+            // Log in with Firebase Authentication using the retrieved email
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            alert('Login successful!');
+            window.location.href = 'index.html'; // Redirect to index.html
+        } catch (error) {
+            alert('Error: ' + error.message);
+        }
+    });
+</script>
