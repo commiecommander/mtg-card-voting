@@ -84,7 +84,7 @@
             padding: 20px 0;
         }
         .card {
-            width: 100%; /* Adjusted to fit content */
+            width: 100%;
             background-color: #fff;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -95,6 +95,9 @@
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 10px;
         }
         .card-details img {
             max-width: 100%;
@@ -105,6 +108,19 @@
             margin: 5px 0;
             font-size: 0.9em;
             color: #555;
+        }
+        .dual-faced-card {
+            display: flex;
+            gap: 10px;
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 10px;
+        }
+        .dual-faced-card > div {
+            flex: 1;
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 10px;
         }
         .vote-section {
             margin-top: 15px;
@@ -311,29 +327,27 @@
                 // Handle double-faced, modal double-faced, and reversible cards
                 cardHtml += `
                     <div class="card">
-                        <div class="card-details">
-                            <div style="display: flex; gap: 10px;">
-                                <div>
-                                    <img src="${card.card_faces[0].image_uris?.normal || 'https://via.placeholder.com/200x280'}" alt="Card Image of ${card.card_faces[0].name}" />
-                                    <p><strong>Card Name:</strong> ${card.card_faces[0].name}</p>
-                                    <p><strong>Mana Cost:</strong> ${card.card_faces[0].mana_cost || 'N/A'}</p>
-                                    <p><strong>Card Type:</strong> ${card.card_faces[0].type_line}</p>
-                                    <p><strong>Text:</strong> ${card.card_faces[0].oracle_text || 'No text available.'}</p>
-                                    <p><strong>Power/Toughness:</strong> ${card.card_faces[0].power ? `${card.card_faces[0].power}/${card.card_faces[0].toughness}` : 'N/A'}</p>
-                                    <div class="vote-section">
-                                        ${getVoteButtons(card.card_faces[0].name)}
-                                    </div>
+                        <div class="dual-faced-card">
+                            <div>
+                                <img src="${card.card_faces[0].image_uris?.normal || 'https://via.placeholder.com/200x280'}" alt="Card Image of ${card.card_faces[0].name}" />
+                                <p><strong>Card Name:</strong> ${card.card_faces[0].name}</p>
+                                <p><strong>Mana Cost:</strong> ${card.card_faces[0].mana_cost || 'N/A'}</p>
+                                <p><strong>Card Type:</strong> ${card.card_faces[0].type_line}</p>
+                                <p><strong>Text:</strong> ${card.card_faces[0].oracle_text || 'No text available.'}</p>
+                                <p><strong>Power/Toughness:</strong> ${card.card_faces[0].power ? `${card.card_faces[0].power}/${card.card_faces[0].toughness}` : 'N/A'}</p>
+                                <div class="vote-section">
+                                    ${getVoteButtons(card.card_faces[0].name)}
                                 </div>
-                                <div>
-                                    <img src="${card.card_faces[1].image_uris?.normal || 'https://via.placeholder.com/200x280'}" alt="Card Image of ${card.card_faces[1].name}" />
-                                    <p><strong>Card Name:</strong> ${card.card_faces[1].name}</p>
-                                    <p><strong>Mana Cost:</strong> ${card.card_faces[1].mana_cost || 'N/A'}</p>
-                                    <p><strong>Card Type:</strong> ${card.card_faces[1].type_line}</p>
-                                    <p><strong>Text:</strong> ${card.card_faces[1].oracle_text || 'No text available.'}</p>
-                                    <p><strong>Power/Toughness:</strong> ${card.card_faces[1].power ? `${card.card_faces[1].power}/${card.card_faces[1].toughness}` : 'N/A'}</p>
-                                    <div class="vote-section">
-                                        ${getVoteButtons(card.card_faces[1].name)}
-                                    </div>
+                            </div>
+                            <div>
+                                <img src="${card.card_faces[1].image_uris?.normal || 'https://via.placeholder.com/200x280'}" alt="Card Image of ${card.card_faces[1].name}" />
+                                <p><strong>Card Name:</strong> ${card.card_faces[1].name}</p>
+                                <p><strong>Mana Cost:</strong> ${card.card_faces[1].mana_cost || 'N/A'}</p>
+                                <p><strong>Card Type:</strong> ${card.card_faces[1].type_line}</p>
+                                <p><strong>Text:</strong> ${card.card_faces[1].oracle_text || 'No text available.'}</p>
+                                <p><strong>Power/Toughness:</strong> ${card.card_faces[1].power ? `${card.card_faces[1].power}/${card.card_faces[1].toughness}` : 'N/A'}</p>
+                                <div class="vote-section">
+                                    ${getVoteButtons(card.card_faces[1].name)}
                                 </div>
                             </div>
                         </div>
