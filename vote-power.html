@@ -65,6 +65,7 @@
     <script type="module">
         // Import Firebase modules
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-auth.js";
         import { getFirestore, collection, addDoc, query, getDocs } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-firestore.js";
 
         // Your Firebase configuration
@@ -80,20 +81,54 @@
 
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
         const db = getFirestore(app);
+
+        // Track user login state
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                console.log("User is logged in:", user.uid);
+                // You can update the UI to reflect the logged-in state
+            } else {
+                console.log("User is not logged in.");
+                // Redirect to login page or show a login prompt
+            }
+        });
 
         // Handle voting
         async function vote(cardName, powerLevel, event) {
             event.preventDefault(); // Prevent default button behavior
+
+            // Check if the user is logged in
+            const user = auth.currentUser;
+            if (!user) {
+                alert('You must be logged in to vote. Redirecting to login page...');
+                window.location.href = 'login.html'; // Redirect to login page
+                return;
+            }
+
             console.log(`Voted for ${cardName} at Power Level ${powerLevel}`);
 
             try {
+                // Check if the user has already voted for this card
+                const votesQuery = query(
+                    collection(db, "votes"),
+                    where("cardName", "==", cardName),
+                    where("userID", "==", user.uid)
+                );
+                const votesSnapshot = await getDocs(votesQuery);
+
+                if (!votesSnapshot.empty) {
+                    alert('You have already voted for this card.');
+                    return;
+                }
+
                 // Save the vote to Firestore
                 const voteData = {
                     cardName: cardName,
                     powerLevel: powerLevel,
                     timestamp: new Date(),
-                    userID: "currentUserID" // Replace with the actual user ID (from Firebase Authentication)
+                    userID: user.uid // Use the logged-in user's UID
                 };
 
                 // Add the vote to the "votes" collection
@@ -123,7 +158,7 @@
                 }
             }
 
-            function displayCards(cards) {
+            async function displayCards(cards) {
                 console.log('Displaying cards:', cards); // Debugging
                 const cardsGrid = document.getElementById('cards-grid');
                 if (!cardsGrid) {
@@ -132,8 +167,9 @@
                 }
                 cardsGrid.innerHTML = ''; // Clear any existing content
 
-                cards.forEach(card => {
+                for (const card of cards) {
                     const imageUrl = card.image_uris?.normal || 'https://via.placeholder.com/200x280'; // Fallback image
+                    const hasVoted = await checkUserVoteStatus(card.name);
 
                     // Generate HTML for the card
                     cardsGrid.innerHTML += `
@@ -147,15 +183,31 @@
                                 <p><strong>Power/Toughness:</strong> ${card.power ? `${card.power}/${card.toughness}` : 'N/A'}</p>
                                 <p><strong>EDHREC Rank:</strong> ${card.edhrec_rank || 'N/A'}</p>
                                 <div class="vote-buttons">
-                                    <button onclick="vote('${card.name}', 1, event)">Power Level 1 (Core)</button>
-                                    <button onclick="vote('${card.name}', 2, event)">Power Level 2 (Upgraded)</button>
-                                    <button onclick="vote('${card.name}', 3, event)">Power Level 3 (Optimized)</button>
-                                    <button onclick="vote('${card.name}', 4, event)">Power Level 4 (High Power-cEDH)</button>
+                                    <button onclick="vote('${card.name}', 1, event)" ${hasVoted ? 'disabled' : ''}>Power Level 1 (Core)</button>
+                                    <button onclick="vote('${card.name}', 2, event)" ${hasVoted ? 'disabled' : ''}>Power Level 2 (Upgraded)</button>
+                                    <button onclick="vote('${card.name}', 3, event)" ${hasVoted ? 'disabled' : ''}>Power Level 3 (Optimized)</button>
+                                    <button onclick="vote('${card.name}', 4, event)" ${hasVoted ? 'disabled' : ''}>Power Level 4 (High Power-cEDH)</button>
                                 </div>
                             </div>
                         </div>
                     `;
-                });
+                }
+            }
+
+            // Check if the user has already voted for a card
+            async function checkUserVoteStatus(cardName) {
+                const user = auth.currentUser;
+                if (!user) return false; // User is not logged in
+
+                // Check if the user has already voted for this card
+                const votesQuery = query(
+                    collection(db, "votes"),
+                    where("cardName", "==", cardName),
+                    where("userID", "==", user.uid)
+                );
+                const votesSnapshot = await getDocs(votesQuery);
+
+                return !votesSnapshot.empty; // Returns true if the user has already voted
             }
 
             // Fetch cards when the page loads
