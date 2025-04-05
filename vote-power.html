@@ -269,8 +269,8 @@
             });
 
             async function fetchCards() {
-                // More specific query - top 20 commander cards by EDHREC rank
-                const apiUrl = 'https://api.scryfall.com/cards/search?q=game:paper+legal:commander&order=edhrec&unique=cards&dir=desc&include_extras=false&include_multilingual=false&page=1&per_page=20';
+                // Modified query - top 20 commander cards by EDHREC rank in ASCENDING order (most popular first)
+                const apiUrl = 'https://api.scryfall.com/cards/search?q=game:paper+legal:commander&order=edhrec&unique=cards&dir=asc&include_extras=false&include_multilingual=false&page=1&per_page=20';
                 console.log('Fetching cards from:', apiUrl);
                 
                 try {
@@ -282,7 +282,14 @@
                     console.log('Data received:', data);
                     
                     if (data.data && data.data.length > 0) {
-                        await displayCards(data.data);
+                        // Sort the cards by EDHREC rank (ascending) to ensure most popular are first
+                        const sortedCards = data.data.sort((a, b) => {
+                            const rankA = a.edhrec_rank || Infinity;
+                            const rankB = b.edhrec_rank || Infinity;
+                            return rankA - rankB;
+                        });
+                        
+                        await displayCards(sortedCards);
                         document.getElementById('loading-message').style.display = 'none';
                     } else {
                         console.error('No cards found in response');
