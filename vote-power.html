@@ -107,6 +107,10 @@
         .vote-buttons button:hover {
             background-color: #555;
         }
+        .vote-buttons button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
         footer {
             background-color: #333;
             color: #fff;
@@ -115,6 +119,12 @@
             position: fixed;
             bottom: 0;
             width: 100%;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+            font-style: italic;
+            color: #666;
         }
     </style>
 </head>
@@ -162,6 +172,7 @@
         </div>
 
         <!-- Cards Grid -->
+        <div id="loading-message" class="loading">Loading cards...</div>
         <div class="cards-grid" id="cards-grid">
             <!-- Cards will be dynamically inserted here -->
         </div>
@@ -176,14 +187,14 @@
         // Import Firebase modules
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, query, getDocs } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, query, getDocs, where } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-firestore.js";
 
         // Your Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyAGuMe2uHwiIRAB6XFdiKdzrAzPGE_42yY",
             authDomain: "commander-collective-3fdae.firebaseapp.com",
             projectId: "commander-collective-3fdae",
-            storageBucket: "commander-collective-3fdae.firebasestorage.app",
+            storageBucket: "commander-collective-3fdae.appspot.com",
             messagingSenderId: "449116378578",
             appId: "1:449116378578:web:762571cc80956cccbda40b",
             measurementId: "G-D61FGMS81X"
@@ -194,26 +205,14 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Track user login state
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                console.log("User is logged in:", user.uid);
-                // You can update the UI to reflect the logged-in state
-            } else {
-                console.log("User is not logged in.");
-                // Redirect to login page or show a login prompt
-            }
-        });
+        // Make vote function global
+        window.vote = async function(cardName, powerLevel, event) {
+            event.preventDefault();
 
-        // Handle voting
-        async function vote(cardName, powerLevel, event) {
-            event.preventDefault(); // Prevent default button behavior
-
-            // Check if the user is logged in
             const user = auth.currentUser;
             if (!user) {
                 alert('You must be logged in to vote. Redirecting to login page...');
-                window.location.href = 'login.html'; // Redirect to login page
+                window.location.href = 'login.html';
                 return;
             }
 
@@ -238,13 +237,19 @@
                     cardName: cardName,
                     powerLevel: powerLevel,
                     timestamp: new Date(),
-                    userID: user.uid // Use the logged-in user's UID
+                    userID: user.uid
                 };
 
-                // Add the vote to the "votes" collection
                 const docRef = await addDoc(collection(db, "votes"), voteData);
                 console.log("Vote saved with ID: ", docRef.id);
 
+                // Disable all vote buttons for this card
+                const buttons = event.target.closest('.vote-buttons').querySelectorAll('button');
+                buttons.forEach(button => {
+                    button.disabled = true;
+                    button.style.backgroundColor = '#ccc';
+                });
+                
                 alert('Vote saved successfully!');
             } catch (error) {
                 console.error("Error saving vote: ", error);
@@ -253,75 +258,107 @@
         }
 
         // Fetch and display cards
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Track user login state
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    console.log("User is logged in:", user.uid);
+                } else {
+                    console.log("User is not logged in.");
+                }
+            });
+
             async function fetchCards() {
-                const apiUrl = 'https://api.scryfall.com/cards/search?q=game:paper+legal:commander&order=edhrec';
-                console.log('Fetching cards from:', apiUrl); // Debugging
+                // More specific query - top 20 commander cards by EDHREC rank
+                const apiUrl = 'https://api.scryfall.com/cards/search?q=game:paper+legal:commander&order=edhrec&unique=cards&dir=desc&include_extras=false&include_multilingual=false&page=1&per_page=20';
+                console.log('Fetching cards from:', apiUrl);
+                
                 try {
                     const response = await fetch(apiUrl);
-                    console.log('Response received:', response); // Debugging
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
                     const data = await response.json();
-                    console.log('Data received:', data); // Debugging
-                    displayCards(data.data);
+                    console.log('Data received:', data);
+                    
+                    if (data.data && data.data.length > 0) {
+                        await displayCards(data.data);
+                        document.getElementById('loading-message').style.display = 'none';
+                    } else {
+                        console.error('No cards found in response');
+                        document.getElementById('loading-message').textContent = 'No cards found. Please try again later.';
+                    }
                 } catch (error) {
-                    console.error('Error fetching cards:', error); // Debugging
+                    console.error('Error fetching cards:', error);
+                    document.getElementById('loading-message').textContent = `Error loading cards: ${error.message}`;
                 }
             }
 
             async function displayCards(cards) {
-                console.log('Displaying cards:', cards); // Debugging
                 const cardsGrid = document.getElementById('cards-grid');
-                if (!cardsGrid) {
-                    console.error('cards-grid element not found!'); // Debugging
-                    return;
-                }
                 cardsGrid.innerHTML = ''; // Clear any existing content
 
                 for (const card of cards) {
-                    const imageUrl = card.image_uris?.normal || 'https://via.placeholder.com/200x280'; // Fallback image
-                    const hasVoted = await checkUserVoteStatus(card.name);
-
-                    // Generate HTML for the card
-                    cardsGrid.innerHTML += `
-                        <div class="card">
+                    try {
+                        // Get the best available image
+                        let imageUrl = card.image_uris?.normal || 
+                                     (card.card_faces && card.card_faces[0].image_uris?.normal) || 
+                                     'https://via.placeholder.com/200x280';
+                        
+                        // Escape special characters in card name for HTML
+                        const escapedCardName = card.name.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+                        
+                        // Check if user has already voted for this card
+                        const hasVoted = await checkUserVoteStatus(card.name);
+                        
+                        // Create card element
+                        const cardElement = document.createElement('div');
+                        cardElement.className = 'card';
+                        cardElement.innerHTML = `
                             <div class="card-details">
-                                <img src="${imageUrl}" alt="Card Image of ${card.name}" />
-                                <p><strong>Card Name:</strong> ${card.name}</p>
-                                <p><strong>Mana Cost:</strong> ${card.mana_cost || 'N/A'}</p>
-                                <p><strong>Card Type:</strong> ${card.type_line}</p>
-                                <p><strong>Text:</strong> ${card.oracle_text || 'No text available.'}</p>
-                                <p><strong>Power/Toughness:</strong> ${card.power ? `${card.power}/${card.toughness}` : 'N/A'}</p>
-                                <p><strong>EDHREC Rank:</strong> ${card.edhrec_rank || 'N/A'}</p>
+                                <img src="${imageUrl}" alt="Card Image of ${escapedCardName}" loading="lazy" />
+                                <p><strong>${card.name}</strong></p>
+                                <p>${card.mana_cost || 'N/A'}</p>
+                                <p><small>${card.type_line}</small></p>
+                                <p class="card-text">${card.oracle_text || 'No text available.'}</p>
+                                ${card.power ? `<p><small>${card.power}/${card.toughness}</small></p>` : ''}
+                                <p><small>EDHREC Rank: ${card.edhrec_rank || 'N/A'}</small></p>
                                 <div class="vote-buttons">
-                                    <button onclick="vote('${card.name}', 1, event)" ${hasVoted ? 'disabled' : ''}>Power Level 1 (Core)</button>
-                                    <button onclick="vote('${card.name}', 2, event)" ${hasVoted ? 'disabled' : ''}>Power Level 2 (Upgraded)</button>
-                                    <button onclick="vote('${card.name}', 3, event)" ${hasVoted ? 'disabled' : ''}>Power Level 3 (Optimized)</button>
-                                    <button onclick="vote('${card.name}', 4, event)" ${hasVoted ? 'disabled' : ''}>Power Level 4 (High Power-cEDH)</button>
+                                    <button onclick="vote('${escapedCardName}', 1, event)" ${hasVoted ? 'disabled style="background-color: #ccc;"' : ''}>Level 1 (Core)</button>
+                                    <button onclick="vote('${escapedCardName}', 2, event)" ${hasVoted ? 'disabled style="background-color: #ccc;"' : ''}>Level 2 (Upgraded)</button>
+                                    <button onclick="vote('${escapedCardName}', 3, event)" ${hasVoted ? 'disabled style="background-color: #ccc;"' : ''}>Level 3 (Optimized)</button>
+                                    <button onclick="vote('${escapedCardName}', 4, event)" ${hasVoted ? 'disabled style="background-color: #ccc;"' : ''}>Level 4 (High Power)</button>
                                 </div>
                             </div>
-                        </div>
-                    `;
+                        `;
+                        
+                        cardsGrid.appendChild(cardElement);
+                    } catch (error) {
+                        console.error(`Error processing card ${card.name}:`, error);
+                    }
                 }
             }
 
-            // Check if the user has already voted for a card
             async function checkUserVoteStatus(cardName) {
                 const user = auth.currentUser;
-                if (!user) return false; // User is not logged in
+                if (!user) return false;
 
-                // Check if the user has already voted for this card
-                const votesQuery = query(
-                    collection(db, "votes"),
-                    where("cardName", "==", cardName),
-                    where("userID", "==", user.uid)
-                );
-                const votesSnapshot = await getDocs(votesQuery);
-
-                return !votesSnapshot.empty; // Returns true if the user has already voted
+                try {
+                    const votesQuery = query(
+                        collection(db, "votes"),
+                        where("cardName", "==", cardName),
+                        where("userID", "==", user.uid)
+                    );
+                    const votesSnapshot = await getDocs(votesQuery);
+                    return !votesSnapshot.empty;
+                } catch (error) {
+                    console.error("Error checking vote status:", error);
+                    return false;
+                }
             }
 
             // Fetch cards when the page loads
-            fetchCards();
+            await fetchCards();
         });
     </script>
 </body>
