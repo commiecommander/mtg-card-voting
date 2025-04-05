@@ -126,6 +126,27 @@
             font-style: italic;
             color: #666;
         }
+        .no-cards {
+            text-align: center;
+            padding: 20px;
+            font-size: 1.2em;
+        }
+        .load-more {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .load-more button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        .load-more button:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
 <body>
@@ -173,8 +194,14 @@
 
         <!-- Cards Grid -->
         <div id="loading-message" class="loading">Loading cards...</div>
+        <div id="no-cards-message" class="no-cards" style="display: none;">
+            You've already voted on all available cards. Would you like to load more?
+        </div>
         <div class="cards-grid" id="cards-grid">
             <!-- Cards will be dynamically inserted here -->
+        </div>
+        <div id="load-more-container" class="load-more" style="display: none;">
+            <button id="load-more-btn">Load More Cards</button>
         </div>
     </div>
 
@@ -205,6 +232,10 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
+        // Global variables
+        let currentPage = 1;
+        const cardsPerPage = 20;
+
         // Make vote function global
         window.vote = async function(cardName, powerLevel, event) {
             event.preventDefault();
@@ -219,19 +250,6 @@
             console.log(`Voted for ${cardName} at Power Level ${powerLevel}`);
 
             try {
-                // Check if the user has already voted for this card
-                const votesQuery = query(
-                    collection(db, "votes"),
-                    where("cardName", "==", cardName),
-                    where("userID", "==", user.uid)
-                );
-                const votesSnapshot = await getDocs(votesQuery);
-
-                if (!votesSnapshot.empty) {
-                    alert('You have already voted for this card.');
-                    return;
-                }
-
                 // Save the vote to Firestore
                 const voteData = {
                     cardName: cardName,
@@ -251,122 +269,158 @@
                 });
                 
                 alert('Vote saved successfully!');
+                
+                // Check if we need to show the "no cards" message
+                checkRemainingCards();
             } catch (error) {
                 console.error("Error saving vote: ", error);
                 alert('Error saving vote. Please try again.');
             }
         }
 
+        // Check how many cards are left to vote on
+        async function checkRemainingCards() {
+            const cardsGrid = document.getElementById('cards-grid');
+            const voteButtons = cardsGrid.querySelectorAll('.vote-buttons button:not(:disabled)');
+            
+            if (voteButtons.length === 0) {
+                document.getElementById('no-cards-message').style.display = 'block';
+                document.getElementById('load-more-container').style.display = 'block';
+            }
+        }
+
         // Fetch and display cards
         document.addEventListener('DOMContentLoaded', async () => {
             // Track user login state
-            onAuthStateChanged(auth, (user) => {
+            onAuthStateChanged(auth, async (user) => {
                 if (user) {
                     console.log("User is logged in:", user.uid);
+                    await fetchCards();
                 } else {
                     console.log("User is not logged in.");
+                    document.getElementById('loading-message').textContent = 'Please log in to vote on cards.';
                 }
             });
 
-            async function fetchCards() {
-                // Modified query - top 20 commander cards by EDHREC rank in ASCENDING order (most popular first)
-                const apiUrl = 'https://api.scryfall.com/cards/search?q=game:paper+legal:commander&order=edhrec&unique=cards&dir=asc&include_extras=false&include_multilingual=false&page=1&per_page=20';
-                console.log('Fetching cards from:', apiUrl);
-                
-                try {
-                    const response = await fetch(apiUrl);
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    const data = await response.json();
-                    console.log('Data received:', data);
-                    
-                    if (data.data && data.data.length > 0) {
-                        // Sort the cards by EDHREC rank (ascending) to ensure most popular are first
-                        const sortedCards = data.data.sort((a, b) => {
-                            const rankA = a.edhrec_rank || Infinity;
-                            const rankB = b.edhrec_rank || Infinity;
-                            return rankA - rankB;
-                        });
-                        
-                        await displayCards(sortedCards);
-                        document.getElementById('loading-message').style.display = 'none';
-                    } else {
-                        console.error('No cards found in response');
-                        document.getElementById('loading-message').textContent = 'No cards found. Please try again later.';
-                    }
-                } catch (error) {
-                    console.error('Error fetching cards:', error);
-                    document.getElementById('loading-message').textContent = `Error loading cards: ${error.message}`;
-                }
-            }
-
-            async function displayCards(cards) {
-                const cardsGrid = document.getElementById('cards-grid');
-                cardsGrid.innerHTML = ''; // Clear any existing content
-
-                for (const card of cards) {
-                    try {
-                        // Get the best available image
-                        let imageUrl = card.image_uris?.normal || 
-                                     (card.card_faces && card.card_faces[0].image_uris?.normal) || 
-                                     'https://via.placeholder.com/200x280';
-                        
-                        // Escape special characters in card name for HTML
-                        const escapedCardName = card.name.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-                        
-                        // Check if user has already voted for this card
-                        const hasVoted = await checkUserVoteStatus(card.name);
-                        
-                        // Create card element
-                        const cardElement = document.createElement('div');
-                        cardElement.className = 'card';
-                        cardElement.innerHTML = `
-                            <div class="card-details">
-                                <img src="${imageUrl}" alt="Card Image of ${escapedCardName}" loading="lazy" />
-                                <p><strong>${card.name}</strong></p>
-                                <p>${card.mana_cost || 'N/A'}</p>
-                                <p><small>${card.type_line}</small></p>
-                                <p class="card-text">${card.oracle_text || 'No text available.'}</p>
-                                ${card.power ? `<p><small>${card.power}/${card.toughness}</small></p>` : ''}
-                                <p><small>EDHREC Rank: ${card.edhrec_rank || 'N/A'}</small></p>
-                                <div class="vote-buttons">
-                                    <button onclick="vote('${escapedCardName}', 1, event)" ${hasVoted ? 'disabled style="background-color: #ccc;"' : ''}>Level 1 (Core)</button>
-                                    <button onclick="vote('${escapedCardName}', 2, event)" ${hasVoted ? 'disabled style="background-color: #ccc;"' : ''}>Level 2 (Upgraded)</button>
-                                    <button onclick="vote('${escapedCardName}', 3, event)" ${hasVoted ? 'disabled style="background-color: #ccc;"' : ''}>Level 3 (Optimized)</button>
-                                    <button onclick="vote('${escapedCardName}', 4, event)" ${hasVoted ? 'disabled style="background-color: #ccc;"' : ''}>Level 4 (High Power)</button>
-                                </div>
-                            </div>
-                        `;
-                        
-                        cardsGrid.appendChild(cardElement);
-                    } catch (error) {
-                        console.error(`Error processing card ${card.name}:`, error);
-                    }
-                }
-            }
-
-            async function checkUserVoteStatus(cardName) {
-                const user = auth.currentUser;
-                if (!user) return false;
-
-                try {
-                    const votesQuery = query(
-                        collection(db, "votes"),
-                        where("cardName", "==", cardName),
-                        where("userID", "==", user.uid)
-                    );
-                    const votesSnapshot = await getDocs(votesQuery);
-                    return !votesSnapshot.empty;
-                } catch (error) {
-                    console.error("Error checking vote status:", error);
-                    return false;
-                }
-            }
-
-            // Fetch cards when the page loads
-            await fetchCards();
+            // Load more cards button
+            document.getElementById('load-more-btn').addEventListener('click', async () => {
+                currentPage++;
+                document.getElementById('loading-message').style.display = 'block';
+                document.getElementById('no-cards-message').style.display = 'none';
+                document.getElementById('load-more-container').style.display = 'none';
+                await fetchCards();
+            });
         });
+
+        async function fetchCards() {
+            const user = auth.currentUser;
+            if (!user) return;
+
+            // Get cards in ascending EDHREC rank order (most popular first)
+            const apiUrl = `https://api.scryfall.com/cards/search?q=game:paper+legal:commander&order=edhrec&unique=cards&dir=asc&include_extras=false&include_multilingual=false&page=${currentPage}&per_page=${cardsPerPage}`;
+            console.log('Fetching cards from:', apiUrl);
+            
+            try {
+                const response = await fetch(apiUrl);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                console.log('Data received:', data);
+                
+                if (data.data && data.data.length > 0) {
+                    // Sort the cards by EDHREC rank (ascending) to ensure most popular are first
+                    const sortedCards = data.data.sort((a, b) => {
+                        const rankA = a.edhrec_rank || Infinity;
+                        const rankB = b.edhrec_rank || Infinity;
+                        return rankA - rankB;
+                    });
+                    
+                    await displayCards(sortedCards);
+                    document.getElementById('loading-message').style.display = 'none';
+                    
+                    // Check if user has voted on all cards
+                    checkRemainingCards();
+                } else {
+                    console.error('No cards found in response');
+                    document.getElementById('loading-message').textContent = 'No more cards available to vote on.';
+                    document.getElementById('no-cards-message').style.display = 'none';
+                    document.getElementById('load-more-container').style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error fetching cards:', error);
+                document.getElementById('loading-message').textContent = `Error loading cards: ${error.message}`;
+            }
+        }
+
+        async function displayCards(cards) {
+            const cardsGrid = document.getElementById('cards-grid');
+            if (currentPage === 1) {
+                cardsGrid.innerHTML = ''; // Clear existing content only on first load
+            }
+
+            const user = auth.currentUser;
+            if (!user) return;
+
+            // Get all cards the user has already voted on
+            const userVotesQuery = query(
+                collection(db, "votes"),
+                where("userID", "==", user.uid)
+            );
+            const votesSnapshot = await getDocs(userVotesQuery);
+            const votedCardNames = votesSnapshot.docs.map(doc => doc.data().cardName);
+
+            let cardsDisplayed = 0;
+
+            for (const card of cards) {
+                try {
+                    // Skip cards the user has already voted on
+                    if (votedCardNames.includes(card.name)) {
+                        continue;
+                    }
+
+                    // Get the best available image
+                    let imageUrl = card.image_uris?.normal || 
+                                 (card.card_faces && card.card_faces[0].image_uris?.normal) || 
+                                 'https://via.placeholder.com/200x280';
+                    
+                    // Escape special characters in card name for HTML
+                    const escapedCardName = card.name.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+                    
+                    // Create card element
+                    const cardElement = document.createElement('div');
+                    cardElement.className = 'card';
+                    cardElement.innerHTML = `
+                        <div class="card-details">
+                            <img src="${imageUrl}" alt="Card Image of ${escapedCardName}" loading="lazy" />
+                            <p><strong>${card.name}</strong></p>
+                            <p>${card.mana_cost || 'N/A'}</p>
+                            <p><small>${card.type_line}</small></p>
+                            <p class="card-text">${card.oracle_text || 'No text available.'}</p>
+                            ${card.power ? `<p><small>${card.power}/${card.toughness}</small></p>` : ''}
+                            <p><small>EDHREC Rank: ${card.edhrec_rank || 'N/A'}</small></p>
+                            <div class="vote-buttons">
+                                <button onclick="vote('${escapedCardName}', 1, event)">Level 1 (Core)</button>
+                                <button onclick="vote('${escapedCardName}', 2, event)">Level 2 (Upgraded)</button>
+                                <button onclick="vote('${escapedCardName}', 3, event)">Level 3 (Optimized)</button>
+                                <button onclick="vote('${escapedCardName}', 4, event)">Level 4 (High Power)</button>
+                            </div>
+                        </div>
+                    `;
+                    
+                    cardsGrid.appendChild(cardElement);
+                    cardsDisplayed++;
+                } catch (error) {
+                    console.error(`Error processing card ${card.name}:`, error);
+                }
+            }
+
+            // If no cards were displayed (all were already voted on)
+            if (cardsDisplayed === 0 && currentPage === 1) {
+                document.getElementById('no-cards-message').style.display = 'block';
+                document.getElementById('load-more-container').style.display = 'block';
+            }
+        }
     </script>
 </body>
 </html>
